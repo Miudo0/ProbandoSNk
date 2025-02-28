@@ -8,10 +8,15 @@ import javax.inject.Inject
 class getCharactersUseCase @Inject constructor(
     private val repository: CharactersRepository
 ) {
-    suspend operator fun invoke():List<Characters>? {
+    //    suspend operator fun invoke():List<Characters>? {
+//        return withContext(Dispatchers.IO) {
+//         repository.getCharacters()
+//        }
+    suspend operator fun invoke(pageUrl: String?): ApiResponse {
         return withContext(Dispatchers.IO) {
-         repository.getCharacters()
+            repository.getCharacters(pageUrl)
         }
     }
+
 
 }

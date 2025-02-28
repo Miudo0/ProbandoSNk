@@ -19,20 +19,30 @@ class GetCharactersViewModel @Inject constructor(
     private val _characters = MutableStateFlow<CharacterState>(CharacterState.Loading)
     val characters = _characters
 
+    private var nextPage: String? = null
+
+
     fun getCharacters() {
         viewModelScope.launch {
-            val response = getCharactersUseCase()
-       if(response != null){
-           _characters.value = CharacterState.Success(response)
-       }else{
-           _characters.value = CharacterState.Error("Error al obtener los personajes")
-       }
+            val response = getCharactersUseCase(nextPage) // Pasar nextPage si existe
+            nextPage = response.info?.nextPage // Guardar la próxima página
 
+            val currentList = _characters.value.let { state ->
+                if (state is CharacterState.Success) {
+                    state.characters
+                } else {
+                    emptyList()
+                }
+            }
+            val newCharacters = response.results ?: emptyList()
+            _characters.value = CharacterState.Success(currentList + newCharacters)
         }
     }
 
+    fun hasMorePages(): Boolean = nextPage != null
 
 }
+
 sealed interface CharacterState {
     object Loading : CharacterState
     data class Success(val characters: List<Characters>) : CharacterState

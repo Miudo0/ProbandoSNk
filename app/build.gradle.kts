@@ -44,11 +44,23 @@ android {
 
 dependencies {
 
+    implementation(libs.ui)
+    implementation(libs.androidx.material)
+    implementation(libs.ui.tooling.preview)
+    implementation(libs.androidx.lifecycle.runtime.ktx.v231)
+    implementation(libs.androidx.activity.compose.v131)
+
+
+
+
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.runtime.livedata)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
 
+//coil
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
 
     //hilt
     implementation(libs.hilt.android)

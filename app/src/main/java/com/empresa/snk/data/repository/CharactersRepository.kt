@@ -10,11 +10,14 @@ import javax.inject.Inject
 
 class CharactersRepository @Inject constructor(
 private val SNKApi: SNKApi
-){
-    suspend fun getCharacters(): List<Characters>?{
+) {
+    suspend fun getCharacters(pageUrl: String?): ApiResponse {
         return withContext(Dispatchers.IO) {
-          val response =  SNKApi.getCharacters()
-          response.results
+            if (pageUrl == null) {
+                SNKApi.getCharacters() // Cargar la primera página
+            } else {
+                SNKApi.getCharactersByUrl(pageUrl) // Cargar la siguiente página
+            }
         }
     }
 }
