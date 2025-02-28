@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import com.empresa.snk.ui.PersonajesScreen
+import com.empresa.snk.ui.TitansScreen
 import com.empresa.snk.ui.theme.SNKTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -20,8 +21,11 @@ class MainActivity : ComponentActivity() {
         setContent {
             SNKTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    PersonajesScreen(
-                        innerPadding,
+//                    PersonajesScreen(
+//                        innerPadding,
+//                    )
+                    TitansScreen(
+                        innerPadding
                     )
 
                 }
