@@ -15,7 +15,7 @@ class GetCharactersByNameViewModel @Inject constructor(
     private val getCharactersFilterUseCase: GetCharactersFilterUseCase
 ):ViewModel(){
 
-    private var nextPage: String? = null
+
 
     private val _state = MutableStateFlow<FilterState>(FilterState.Loading)
     val state = _state
@@ -33,7 +33,7 @@ class GetCharactersByNameViewModel @Inject constructor(
             }
         }
     }
-    fun hasMorePages(): Boolean = nextPage != null
+
 
 
     sealed interface FilterState{

@@ -22,11 +22,19 @@ import com.empresa.snk.domain.charactersDomain.Characters
 fun CharacterDetailsDialog(
     character: Characters,
     onDismiss: () -> Unit,
-    viewModel: GetEpisodesDetailViewModel = hiltViewModel()
+    viewModel: GetEpisodesDetailViewModel = hiltViewModel(),
+    viewModelFamily: GetFamilyViewModel = hiltViewModel()
 ) {
-   val episodeNames by viewModel.episodeName.collectAsState()
+    val episodeNames by viewModel.episodeName.collectAsState()
+    val familyNames by viewModelFamily.family.collectAsState()
     LaunchedEffect(character.episodes) {
         viewModel.getEpisodesName(character.episodes)
+    }
+    LaunchedEffect(character.relatives) {
+        val familyUrls = character.relatives.flatMap { it.members }
+        if (familyUrls.isNotEmpty()) {
+            viewModelFamily.getFamily(familyUrls)
+        }
     }
 
     AlertDialog(
@@ -78,29 +86,34 @@ fun CharacterDetailsDialog(
                         Text(text = "Residence: $it")
                     }
                 }
+
                 item {
 
-                    Text(text = "Status: ${character.status}")
-                }
-                item {
+                    when (val current = familyNames) {
+                        is FamilyState.Success -> {
+                            Row {
+                                Text(text = "family:")
+                                character.relatives.forEach { relative ->
+                                    Text(text = relative.family ?: "Unknown Family")
+                                }
+                            }
 
-                    Text(text = "Roles: ${character.roles}")
+                            Column {
+                                Text(text = "Members:")
+                                current.family.forEach { family ->
+                                    Text(text = family)
+                                }
+                            }
+                        }
+
+                        is FamilyState.Error -> {
+                            Text(text = "Error al cargar la familia")
+                        }
+
+                        is FamilyState.Loading -> {}
+                    }
+
                 }
-//
-//                character.relatives?.let { relativesList ->
-//                    // Iterar sobre la lista de Relatives
-//                    for (relative in relativesList) {
-//                        // Verifica si family no es nulo y muestra
-//                        relative.family?.let {
-//                            Text(text = "Family: $it")
-//                        }
-//
-//                        // Verifica si members no es nulo y tiene elementos, y muestra la lista
-//                        if (!relative.members.isNullOrEmpty()) {
-//                            Text(text = "Members: ${relative.members.joinToString(", ")}")
-//                        }
-//                    }
-//                }
                 item {
                     character.status?.let {
                         Text(text = "Status: $it")
@@ -110,23 +123,26 @@ fun CharacterDetailsDialog(
                     Text(text = "Groups: ${character.groups.joinToString(", {name}")}")
                 }
                 item {
-                  when(val current = episodeNames){
-                      is NombresEpisodeState.Success -> {
-                          Column {
-                              Text(text = "Episodes:")
-                              current.episodeNames.forEach { episode ->
-                                  Text(text = episode)
-                              }
-                          }
+                    when (val current = episodeNames) {
+                        is NombresEpisodeState.Success -> {
+                            Column {
+                                Text(text = "Episodes:")
+                                current.episodeNames.forEach { episode ->
+                                    Text(text = episode)
+
+                                }
+                            }
 //                          Text(text = "Episodes: ${current.episodeNames.joinToString(", ")}")
-                      }
-                      is NombresEpisodeState.Error -> {
-                          Text(text = "Error al cargar los episodios")
-                      }
-                      is NombresEpisodeState.Loading -> {
-                          Text(text = "Cargando episodios...")
-                      }
-                  }
+                        }
+
+                        is NombresEpisodeState.Error -> {
+                            Text(text = "Error al cargar los episodios")
+                        }
+
+                        is NombresEpisodeState.Loading -> {
+                            Text(text = "Cargando episodios...")
+                        }
+                    }
                 }
 
             }

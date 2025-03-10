@@ -3,6 +3,7 @@ package com.empresa.snk.data.network
 
 import com.empresa.snk.domain.EpisodesDomain.Episodes
 import com.empresa.snk.domain.EpisodesDomain.EpisodesResponse
+import com.empresa.snk.domain.charactersDomain.Characters
 import com.empresa.snk.domain.charactersDomain.CharactersResponse
 import com.empresa.snk.domain.titansDomain.TitansResponse
 import retrofit2.http.GET
@@ -27,6 +28,10 @@ interface SNKApi{
         @Query("status") status: String? = null,
         @Query("occupation") occupation: String? = null
     ): CharactersResponse
+
+    @GET
+    suspend fun getFamilyMembers(@Url familyUrl: String): Characters
+
 
     //titans
     @GET("titans")

@@ -4,7 +4,6 @@ import android.util.Log
 import com.empresa.snk.data.network.SNKApi
 import com.empresa.snk.domain.EpisodesDomain.Episodes
 import com.empresa.snk.domain.EpisodesDomain.EpisodesResponse
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -13,7 +12,7 @@ class EpisodesRepository @Inject constructor(
     private val SNKApi: SNKApi
 ) {
     suspend fun getEpisodes(pageUrl: String?): EpisodesResponse {
-        return withContext(Dispatchers.IO){
+        return withContext(IO){
             if (pageUrl == null) {
                 SNKApi.getEpisodes()
             }

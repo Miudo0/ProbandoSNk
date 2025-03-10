@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -17,6 +18,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
@@ -27,17 +29,36 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.empresa.snk.domain.charactersDomain.Characters
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun PersonajesScreen(paddingValues: PaddingValues) {
     val searchText = remember { mutableStateOf("") }
     val selectedCharacter = remember { mutableStateOf<Characters?>(null) }
+
+    // Debounce para evitar búsquedas inmediatas al escribir
+
+    val coroutineScope = rememberCoroutineScope()
+
+
+    LaunchedEffect(searchText.value) {
+
+
+     coroutineScope.launch {
+            delay(500) // Espera 500ms después de que el usuario deja de escribir
+            Log.d("PersonajesScreen", "Búsqueda iniciada con texto: ${searchText.value}")
+        }
+    }
+
+
     Column(modifier = Modifier.fillMaxSize()) {
-
-        SearchBar(modifier = Modifier.padding(paddingValues), searchText = searchText)
-
+      SnkTopAppBar( searchText  = searchText)
+//       SearchBar(modifier = Modifier.padding(paddingValues), searchText = searchText)
+        SearchBar(searchText = searchText,  modifier = Modifier.fillMaxWidth())
         Personajes(
             searchText = searchText,
+
             onCharacterClick = { character -> selectedCharacter.value = character }
         )
         selectedCharacter.value?.let { character ->
@@ -63,9 +84,9 @@ fun Personajes(
     val busqueda by getCharactersByNameViewmodel.state.collectAsState(GetCharactersByNameViewModel.FilterState.Loading)
     val state by viewModel.characters.collectAsState(CharacterState.Loading)
 
-
     // Realiza la búsqueda cada vez que el searchText cambia
     LaunchedEffect(searchText.value) {
+        Log.d("Personajes", "Búsqueda iniciada con texto: ${searchText.value}")
         if (searchText.value.isNotEmpty()) {
             getCharactersByNameViewmodel.getCharactersFilter(searchText.value)
         } else {

@@ -35,4 +35,13 @@ class CharactersRepository @Inject constructor(
         }
     }
 
+    suspend fun getFamilyMembers(familyUrl: String): Characters? {
+        return withContext(Dispatchers.IO) {
+            try {
+                SNKApi.getFamilyMembers(familyUrl)
+            } catch (e: Exception) {
+                null
+            }
+        }
+    }
 }
