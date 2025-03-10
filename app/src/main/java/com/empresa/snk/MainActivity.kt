@@ -26,15 +26,15 @@ class MainActivity : ComponentActivity() {
                 Scaffold(
                     topBar = {
                         TopAppBar(
-                            title = { Text("SNK") } ,
+                            title = { Text("SNK") },
                             colors = topAppBarColors(
                                 containerColor = colors.primary,
                                 titleContentColor = colors.onPrimary,
                             )
                         )
                     }
-                    ) { paddingValues->
-
+                ) { paddingValues ->
+//                    EpisodesScreen(paddingValues = paddingValues)
                     PersonajesScreen(
                         paddingValues = paddingValues
                     )

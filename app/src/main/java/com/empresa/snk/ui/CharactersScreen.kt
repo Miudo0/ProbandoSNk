@@ -1,6 +1,7 @@
 package com.empresa.snk.ui
 
 import android.util.Log
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,38 +26,46 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
+import com.empresa.snk.domain.charactersDomain.Characters
 
 @Composable
 fun PersonajesScreen(paddingValues: PaddingValues) {
     val searchText = remember { mutableStateOf("") }
+    val selectedCharacter = remember { mutableStateOf<Characters?>(null) }
     Column(modifier = Modifier.fillMaxSize()) {
 
         SearchBar(modifier = Modifier.padding(paddingValues), searchText = searchText)
 
-        Personajes(searchText = searchText)
+        Personajes(
+            searchText = searchText,
+            onCharacterClick = { character -> selectedCharacter.value = character }
+        )
+        selectedCharacter.value?.let { character ->
+            CharacterDetailsDialog(
+                character = character,
+                onDismiss = { selectedCharacter.value = null })
+        }
     }
 
 }
 
 
+
 @Composable
 fun Personajes(
     searchText: MutableState<String>,
+    onCharacterClick: (Characters) -> Unit,
     viewModel: GetCharactersViewModel = hiltViewModel(),
     getCharactersByNameViewmodel: GetCharactersByNameViewModel = hiltViewModel(),
-    paddingValues: PaddingValues = PaddingValues()
 
-    ) {
+
+) {
     val busqueda by getCharactersByNameViewmodel.state.collectAsState(GetCharactersByNameViewModel.FilterState.Loading)
     val state by viewModel.characters.collectAsState(CharacterState.Loading)
 
 
-//    LaunchedEffect(Unit) {
-//        viewModel.getCharacters()
-//    }
     // Realiza la búsqueda cada vez que el searchText cambia
     LaunchedEffect(searchText.value) {
-        Log.d("Busqueda", "Texto de búsqueda actualizado: ${searchText.value}")
         if (searchText.value.isNotEmpty()) {
             getCharactersByNameViewmodel.getCharactersFilter(searchText.value)
         } else {
@@ -85,30 +94,26 @@ fun Personajes(
         columns = androidx.compose.foundation.lazy.grid.GridCells.Fixed(2)
     ) {
         items(personajes) { character ->
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            character.img?.let {
-                                Log.d("Greeting", "Character Image URL: $it")
-                                CharacterImage(it)
-                            }
-                            Text(text = character.name ?: "Desconocido")
-                        }
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .clickable {
+                        onCharacterClick(character)
                     }
-                    item {
-                        if (viewModel.hasMorePages()) {
-                            viewModel.getCharacters()
-                        }
-                    }
+            ) {
+                character.img?.let {
+                    CharacterImage(it)
+                }
+                Text(text = character.name ?: "Desconocido")
+            }
+        }
+        item {
+            if (viewModel.hasMorePages()) {
+                viewModel.getCharacters()
+            }
+        }
     }
-
-    // Mostrar un mensaje si ocurre un error
-//    when (val current = state) {
-//        is CharacterState.Error -> {
-//            Text(text = current.message)
-//        }
-//    }
 }
-
-
 
 
 @Composable
@@ -124,6 +129,25 @@ fun CharacterImage(imageUrl: String?) {
             contentDescription = "Imagen del personaje",
             contentScale = ContentScale.Crop,
             modifier = Modifier.clip(CircleShape),
+        )
+    }
+}
+
+@Composable
+fun CharacterImageInfo(imageUrl: String?) {
+    imageUrl?.let {
+        Log.d("CharacterImage", "URL de la imagen: $it")
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(it)
+                .crossfade(true)
+                .build(),
+
+            contentDescription = "Imagen del personaje",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+
+
         )
     }
 }
