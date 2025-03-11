@@ -30,7 +30,6 @@ import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.empresa.snk.domain.charactersDomain.Characters
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 @Composable
 fun PersonajesScreen(paddingValues: PaddingValues) {
@@ -42,20 +41,22 @@ fun PersonajesScreen(paddingValues: PaddingValues) {
     val coroutineScope = rememberCoroutineScope()
 
 
-    LaunchedEffect(searchText.value) {
-
-
-     coroutineScope.launch {
-            delay(500) // Espera 500ms después de que el usuario deja de escribir
-            Log.d("PersonajesScreen", "Búsqueda iniciada con texto: ${searchText.value}")
-        }
-    }
+//    LaunchedEffect(searchText.value) {
+//     coroutineScope.launch {
+//            delay(1000) // Espera 500ms después de que el usuario deja de escribir
+//            Log.d("PersonajesScreen", "Búsqueda iniciada con texto: ${searchText.value}")
+//        }
+//    }
 
 
     Column(modifier = Modifier.fillMaxSize()) {
-      SnkTopAppBar( searchText  = searchText)
-//       SearchBar(modifier = Modifier.padding(paddingValues), searchText = searchText)
-        SearchBar(searchText = searchText,  modifier = Modifier.fillMaxWidth())
+    //  SnkTopAppBar( searchText  = searchText)
+      SearchBar(
+          modifier = Modifier
+              .fillMaxWidth()
+              .padding(paddingValues),
+          searchText = searchText)
+      //  SearchBar(searchText = searchText,  modifier = Modifier.fillMaxWidth())
         Personajes(
             searchText = searchText,
 
@@ -86,7 +87,8 @@ fun Personajes(
 
     // Realiza la búsqueda cada vez que el searchText cambia
     LaunchedEffect(searchText.value) {
-        Log.d("Personajes", "Búsqueda iniciada con texto: ${searchText.value}")
+        delay(500)
+        Log.d("Personajes", "Búsqueda 2 iniciada con texto: ${searchText.value}")
         if (searchText.value.isNotEmpty()) {
             getCharactersByNameViewmodel.getCharactersFilter(searchText.value)
         } else {
