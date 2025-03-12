@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.empresa.snk.domain.GetCharactersFilterUseCase
-import com.empresa.snk.domain.charactersDomain.Characters
+import com.empresa.snk.domain.charactersDomain.Personaje
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -39,7 +39,7 @@ class GetCharactersByNameViewModel @Inject constructor(
     sealed interface FilterState{
         object Loading:FilterState
         data object Error:FilterState
-        data class Success(val characters:List<Characters>):FilterState
+        data class Success(val personajes:List<Personaje>):FilterState
     }
 
 }

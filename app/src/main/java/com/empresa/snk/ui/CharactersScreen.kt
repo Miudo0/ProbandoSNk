@@ -18,7 +18,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
@@ -28,25 +27,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
-import com.empresa.snk.domain.charactersDomain.Characters
+import com.empresa.snk.domain.charactersDomain.Personaje
 import kotlinx.coroutines.delay
 
 @Composable
 fun PersonajesScreen(paddingValues: PaddingValues) {
     val searchText = remember { mutableStateOf("") }
-    val selectedCharacter = remember { mutableStateOf<Characters?>(null) }
-
-    // Debounce para evitar búsquedas inmediatas al escribir
-
-    val coroutineScope = rememberCoroutineScope()
-
-
-//    LaunchedEffect(searchText.value) {
-//     coroutineScope.launch {
-//            delay(1000) // Espera 500ms después de que el usuario deja de escribir
-//            Log.d("PersonajesScreen", "Búsqueda iniciada con texto: ${searchText.value}")
-//        }
-//    }
+    val selectedPersonaje = remember { mutableStateOf<Personaje?>(null) }
 
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -60,12 +47,12 @@ fun PersonajesScreen(paddingValues: PaddingValues) {
         Personajes(
             searchText = searchText,
 
-            onCharacterClick = { character -> selectedCharacter.value = character }
+            onCharacterClick = { character -> selectedPersonaje.value = character }
         )
-        selectedCharacter.value?.let { character ->
+        selectedPersonaje.value?.let { character ->
             CharacterDetailsDialog(
-                character = character,
-                onDismiss = { selectedCharacter.value = null })
+                personaje = character,
+                onDismiss = { selectedPersonaje.value = null })
         }
     }
 
@@ -76,12 +63,12 @@ fun PersonajesScreen(paddingValues: PaddingValues) {
 @Composable
 fun Personajes(
     searchText: MutableState<String>,
-    onCharacterClick: (Characters) -> Unit,
+    onCharacterClick: (Personaje) -> Unit,
     viewModel: GetCharactersViewModel = hiltViewModel(),
     getCharactersByNameViewmodel: GetCharactersByNameViewModel = hiltViewModel(),
 
 
-) {
+    ) {
     val busqueda by getCharactersByNameViewmodel.state.collectAsState(GetCharactersByNameViewModel.FilterState.Loading)
     val state by viewModel.characters.collectAsState(CharacterState.Loading)
 
@@ -99,14 +86,14 @@ fun Personajes(
     val personajes = when {
         searchText.value.isEmpty() -> {
             when (val current = state) {
-                is CharacterState.Success -> current.characters
+                is CharacterState.Success -> current.personajes
                 else -> emptyList()
             }
         }
 
         else -> {
             when (val currentBusqueda = busqueda) {
-                is GetCharactersByNameViewModel.FilterState.Success -> currentBusqueda.characters
+                is GetCharactersByNameViewModel.FilterState.Success -> currentBusqueda.personajes
                 else -> emptyList()
             }
         }

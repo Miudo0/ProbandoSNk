@@ -2,7 +2,7 @@ package com.empresa.snk.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.empresa.snk.domain.charactersDomain.Characters
+import com.empresa.snk.domain.charactersDomain.Personaje
 import com.empresa.snk.domain.getCharactersUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,7 +26,7 @@ class GetCharactersViewModel @Inject constructor(
 
             val currentList = _characters.value.let { state ->
                 if (state is CharacterState.Success) {
-                    state.characters
+                    state.personajes
                 } else {
                     emptyList()
                 }
@@ -42,7 +42,7 @@ class GetCharactersViewModel @Inject constructor(
 
 sealed interface CharacterState {
     object Loading : CharacterState
-    data class Success(val characters: List<Characters>) : CharacterState
+    data class Success(val personajes: List<Personaje>) : CharacterState
     data class Error(val message: String) : CharacterState
 
 }

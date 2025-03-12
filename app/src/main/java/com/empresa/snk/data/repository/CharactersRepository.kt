@@ -1,7 +1,7 @@
 package com.empresa.snk.data.repository
 
 import com.empresa.snk.data.network.SNKApi
-import com.empresa.snk.domain.charactersDomain.Characters
+import com.empresa.snk.domain.charactersDomain.Personaje
 
 import com.empresa.snk.domain.charactersDomain.CharactersResponse
 
@@ -28,14 +28,14 @@ class CharactersRepository @Inject constructor(
         gender: String?,
         status: String?,
         occupation: String?
-    ): List<Characters> {
+    ): List<Personaje> {
         return withContext(Dispatchers.IO) {
             val response = SNKApi.getFilteredCharacters(name, gender, status, occupation)
             response.results ?: emptyList()
         }
     }
 
-    suspend fun getFamilyMembers(familyUrl: String): Characters? {
+    suspend fun getFamilyMembers(familyUrl: String): Personaje? {
         return withContext(Dispatchers.IO) {
             try {
                 SNKApi.getFamilyMembers(familyUrl)

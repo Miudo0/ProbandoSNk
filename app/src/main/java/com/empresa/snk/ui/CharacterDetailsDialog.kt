@@ -16,22 +16,22 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.empresa.snk.domain.charactersDomain.Characters
+import com.empresa.snk.domain.charactersDomain.Personaje
 
 @Composable
 fun CharacterDetailsDialog(
-    character: Characters,
+    personaje: Personaje,
     onDismiss: () -> Unit,
     viewModel: GetEpisodesDetailViewModel = hiltViewModel(),
     viewModelFamily: GetFamilyViewModel = hiltViewModel()
 ) {
     val episodeNames by viewModel.episodeName.collectAsState()
     val familyNames by viewModelFamily.family.collectAsState()
-    LaunchedEffect(character.episodes) {
-        viewModel.getEpisodesName(character.episodes)
+    LaunchedEffect(personaje.episodes) {
+        viewModel.getEpisodesName(personaje.episodes)
     }
-    LaunchedEffect(character.relatives) {
-        val familyUrls = character.relatives.flatMap { it.members }
+    LaunchedEffect(personaje.relatives) {
+        val familyUrls = personaje.relatives.flatMap { it.members }
         if (familyUrls.isNotEmpty()) {
             viewModelFamily.getFamily(familyUrls)
         }
@@ -39,50 +39,50 @@ fun CharacterDetailsDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(text = character.name ?: "Desconocido") },
+        title = { Text(text = personaje.name ?: "Desconocido") },
         text = {
             LazyColumn(modifier = Modifier.fillMaxWidth()) {
                 item {
                     Row() {
-                        character.img?.let {
+                        personaje.img?.let {
                             CharacterImageInfo(it)
                         }
                     }
                 }
                 item {
                     Row() {
-                        character.age?.let {
+                        personaje.age?.let {
                             Text(text = "Age: $it")
                         }
                         Spacer(modifier = Modifier.width(8.dp))
-                        character.gender?.let {
+                        personaje.gender?.let {
                             Text(text = "Gender: $it")
                         }
                     }
                 }
                 item {
-                    Text(text = "Alias: ${character.alias}")
+                    Text(text = "Alias: ${personaje.alias}")
                 }
                 item {
-                    character.occupation?.let {
+                    personaje.occupation?.let {
                         Text(text = "occupation: $it")
                     }
                 }
                 item {
-                    character.birthplace?.let {
+                    personaje.birthplace?.let {
                         Text(text = "Birthplace: $it")
                     }
                 }
                 item {
-                    Text(text = "Species: ${character.species}")
+                    Text(text = "Species: ${personaje.species}")
                 }
                 item {
-                    character.height?.let {
+                    personaje.height?.let {
                         Text(text = "Height: $it")
                     }
                 }
                 item {
-                    character.residence?.let {
+                    personaje.residence?.let {
                         Text(text = "Residence: $it")
                     }
                 }
@@ -93,7 +93,7 @@ fun CharacterDetailsDialog(
                         is FamilyState.Success -> {
                             Row {
                                 Text(text = "family:")
-                                character.relatives.forEach { relative ->
+                                personaje.relatives.forEach { relative ->
                                     Text(text = relative.family ?: "Unknown Family")
                                 }
                             }
@@ -115,12 +115,12 @@ fun CharacterDetailsDialog(
 
                 }
                 item {
-                    character.status?.let {
+                    personaje.status?.let {
                         Text(text = "Status: $it")
                     }
                 }
                 item {
-                    Text(text = "Groups: ${character.groups.joinToString(", {name}")}")
+                    Text(text = "Groups: ${personaje.groups.joinToString(", {name}")}")
                 }
                 item {
                     when (val current = episodeNames) {

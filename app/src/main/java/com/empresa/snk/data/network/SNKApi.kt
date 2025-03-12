@@ -3,8 +3,8 @@ package com.empresa.snk.data.network
 
 import com.empresa.snk.domain.EpisodesDomain.Episodes
 import com.empresa.snk.domain.EpisodesDomain.EpisodesResponse
-import com.empresa.snk.domain.charactersDomain.Characters
 import com.empresa.snk.domain.charactersDomain.CharactersResponse
+import com.empresa.snk.domain.charactersDomain.Personaje
 import com.empresa.snk.domain.titansDomain.TitansResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -12,7 +12,7 @@ import retrofit2.http.Url
 
 //https://api.attackontitanapi.com/
 
-
+//esto luego separarlo todo en modulos
 interface SNKApi{
     //characters
     @GET("characters")
@@ -30,7 +30,7 @@ interface SNKApi{
     ): CharactersResponse
 
     @GET
-    suspend fun getFamilyMembers(@Url familyUrl: String): Characters
+    suspend fun getFamilyMembers(@Url familyUrl: String): Personaje
 
 
     //titans
@@ -40,6 +40,9 @@ interface SNKApi{
 
     @GET
     suspend fun getTitansByUrl(@Url pageUrl: String): TitansResponse
+
+    @GET
+    suspend fun getCurrentInheritor(@Url currentInheritorUrl: String): Personaje
 
 
     //Episodes

@@ -7,8 +7,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.empresa.snk.ui.EpisodesScreen
 import com.empresa.snk.ui.PersonajesScreen
 import com.empresa.snk.ui.PortadaScreen
+import com.empresa.snk.ui.TitansScreen
 
 @Composable
 fun NavigarionWrapper(){
@@ -18,13 +20,28 @@ fun NavigarionWrapper(){
 
     NavHost(navController = navController, startDestination = Portada.route) {
         composable(Portada.route){
-            PortadaScreen()
+            PortadaScreen(
+                navigateToCharacters = { navController.navigate(Characters.route) },
+                navigateToTitans = { navController.navigate(Titans.route) },
+                navigateToEpisodes = { navController.navigate(Episodes.route) }
+            )
         }
 
         composable(Characters.route) {
            PersonajesScreen(
                paddingValues = PaddingValues()
            )
+        }
+        composable(Titans.route) {
+            TitansScreen(
+                paddingValues = PaddingValues()
+            )
+        }
+        composable(Episodes.route) {
+            EpisodesScreen(
+                paddingValues = PaddingValues()
+            )
+
         }
 
     }

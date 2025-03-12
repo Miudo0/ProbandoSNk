@@ -2,7 +2,7 @@ package com.empresa.snk.domain.charactersDomain
 
 import com.google.gson.annotations.SerializedName
 
-data class Characters (
+data class Personaje (
     @SerializedName("id") var id: Int? = null,
     @SerializedName("name") var name: String? = null,
     @SerializedName("img") var img: String? = null,
