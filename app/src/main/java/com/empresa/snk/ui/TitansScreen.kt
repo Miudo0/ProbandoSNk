@@ -30,24 +30,33 @@ import coil3.request.crossfade
 fun TitansScreen(
     paddingValues: PaddingValues,
     viewModel: GetTitansViewModel = hiltViewModel(),
-    inheritorViewModel: GetCurrentInheritorViewModel = hiltViewModel()
+    inheritorViewModel: GetCurrentInheritorViewModel = hiltViewModel(),
+    formerInheritorViewModel: GetFormerInheritorsViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
     val currentInheritors by inheritorViewModel.currentInheritors.collectAsState()
+    val formerInheritors by formerInheritorViewModel.formerInheritors.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.getTitans()
-
     }
+
 
     when (val current = state) {
         is titansState.Success -> {
             val titanes = current.titans
+            //puesteo asi porque me hacia bucle infinito en lazycolumn
             titanes.forEach { titan ->
                 titan.currentInheritor?.let {
                     if (!currentInheritors.containsKey(it)) {
                         inheritorViewModel.getCurrentInheritor(it)
                     }
+                }
+                titan.formerInheritors.let {
+                   if(!formerInheritors.containsKey(titan.id)){
+                       //asi por si es nulo
+                       titan.id?.let { it1 -> formerInheritorViewModel.getFormerInheritors(it1, it) }
+                   }
                 }
             }
 
@@ -57,30 +66,51 @@ fun TitansScreen(
                 ) {
 
                     items(titanes) { titan ->
-
-
                         Card(
                             modifier = Modifier
                                 .padding(8.dp)
                                 .fillParentMaxWidth()
                         ) {
+
                             Row(modifier = Modifier.padding(16.dp)) {
                                 titan.img?.let {
                                     TitansImage(it)
-
                                 }
+
                                 Column(
                                     modifier = Modifier.padding(start = 16.dp)
 
                                 ) {
-                                    Text(text = titan.name ?: "Desconocido")
-                                    Text(text = titan.height ?: "Desconocido")
+
+                                    Text(
+                                        text = titan.name ?: "Desconocido",
+                                        style = MaterialTheme.typography.titleLarge
+                                    )
+                                    Text(text = "Height: " + (titan.height ?: "Desconocido"))
                                     Text(text = titan.allegiance ?: "Desconocido")
                                     titan.currentInheritor?.let {
                                         val inheritor = currentInheritors[it] ?: "Desconocido"
                                         Text(text = inheritor)
+                                    }
+                                    // Mostrar los herederos anteriores
+                                    when (val current = formerInheritors[titan.id]) {
+                                        is FormerInheritorsState.Succes -> {
+                                            Text(text = "Former Inheritors:")
+                                            current.inheritors.forEach { inheritor ->
+                                                Text(text = inheritor)
+                                            }
+                                        }
+                                        is FormerInheritorsState.Error -> {
+                                            Text(text = "Error al cargar los herederos anteriores")
+                                        }
+                                        is FormerInheritorsState.Loading -> {
+
+                                        }
+                                        null -> {}
 
                                     }
+
+
                                 }
 
                             }

@@ -44,6 +44,9 @@ interface SNKApi{
     @GET
     suspend fun getCurrentInheritor(@Url currentInheritorUrl: String): Personaje
 
+    @GET
+    suspend fun getFormerInheritors(@Url formerInheritorUrl: String): Personaje
+
 
     //Episodes
     @GET("episodes")
