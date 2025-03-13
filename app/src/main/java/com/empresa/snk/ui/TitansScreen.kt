@@ -1,5 +1,6 @@
 package com.empresa.snk.ui
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -7,8 +8,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -16,8 +18,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -63,22 +68,32 @@ fun TitansScreen(
             if (titanes.isNotEmpty()) {
                 LazyColumn(
                     contentPadding = paddingValues,
+                    modifier = Modifier.padding(16.dp)
                 ) {
 
                     items(titanes) { titan ->
                         Card(
                             modifier = Modifier
-                                .padding(8.dp)
-                                .fillParentMaxWidth()
+                                .padding(16.dp)
+                                .fillParentMaxWidth(),
+                            shape = RoundedCornerShape(16.dp),
+                            elevation = CardDefaults.cardElevation(8.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceVariant
+                            ),
+
                         ) {
 
                             Row(modifier = Modifier.padding(16.dp)) {
                                 titan.img?.let {
                                     TitansImage(it)
+
                                 }
 
                                 Column(
-                                    modifier = Modifier.padding(start = 16.dp)
+                                    modifier = Modifier
+                                        .padding(start = 16.dp)
+                                        .align(Alignment.CenterVertically)
 
                                 ) {
 
@@ -86,18 +101,37 @@ fun TitansScreen(
                                         text = titan.name ?: "Desconocido",
                                         style = MaterialTheme.typography.titleLarge
                                     )
-                                    Text(text = "Height: " + (titan.height ?: "Desconocido"))
-                                    Text(text = titan.allegiance ?: "Desconocido")
+                                    Text(
+                                        text = "Height: " + (titan.height ?: "Desconocido"),
+                                        style = MaterialTheme.typography.bodySmall
+
+                                    )
+                                    Text(
+                                        text ="Allegiance: "+ (titan.allegiance ?: "Desconocido"),
+                                        style = MaterialTheme.typography.bodySmall
+
+                                    )
+                                    Text(
+                                        text = "Abilities: " + titan.abilities.joinToString(", "),
+                                        style = MaterialTheme.typography.bodySmall
+                                        )
                                     titan.currentInheritor?.let {
                                         val inheritor = currentInheritors[it] ?: "Desconocido"
-                                        Text(text = inheritor)
+                                        Text(
+                                            text = "Current Inheritor: $inheritor",
+                                            style = MaterialTheme.typography.bodySmall
+                                            )
+
                                     }
                                     // Mostrar los herederos anteriores
                                     when (val current = formerInheritors[titan.id]) {
                                         is FormerInheritorsState.Succes -> {
-                                            Text(text = "Former Inheritors:")
+                                            Text(text = "Former Inheritors: ",
+                                                style = MaterialTheme.typography.bodySmall)
                                             current.inheritors.forEach { inheritor ->
-                                                Text(text = inheritor)
+                                                Text(text = inheritor,
+                                                    style = MaterialTheme.typography.bodySmall
+                                                    )
                                             }
                                         }
                                         is FormerInheritorsState.Error -> {
@@ -144,7 +178,9 @@ fun TitansImage(imageUrl: String?) {
             contentDescription = "Imagen del personaje",
             contentScale = ContentScale.Crop,
             modifier = Modifier
-                .clip(CircleShape)
+                .clip(RoundedCornerShape(16.dp))
+                .border(2.dp, Color.Black) // Borde negro
+                .shadow(4.dp, RoundedCornerShape(16.dp))
 
         )
     }
