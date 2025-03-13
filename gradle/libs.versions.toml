@@ -1,9 +1,7 @@
 [versions]
 activityComposeVersion = "1.10.1"
 agp = "8.9.0"
-coil = "2.3.0"
-coilCompose = "3.1.0"
-coilComposeVersion = "2.3.0"
+
 coilKtCoilCompose = "3.1.0"
 coilNetworkOkhttp = "3.1.0"
 converterGson = "2.9.0"
