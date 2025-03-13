@@ -27,4 +27,12 @@ object NetworkModule {
     fun provideSNKApi(retrofit: Retrofit): SNKApi {
         return retrofit.create(SNKApi::class.java)
     }
+    @Singleton
+    @Provides
+    fun provideSNKApiOrganization(retrofit: Retrofit): SNKApiOrganization {
+        return retrofit.create(SNKApiOrganization::class.java)
+
+    }
+
+
 }

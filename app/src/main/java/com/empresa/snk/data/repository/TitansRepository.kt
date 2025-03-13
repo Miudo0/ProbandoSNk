@@ -11,14 +11,11 @@ class TitansRepository @Inject constructor(
     private val snkApi: SNKApi
 ) {
     //todos los titanes
-    suspend fun getTitans(page: String?): TitansResponse {
+    suspend fun getTitans(): TitansResponse {
         return withContext(IO) {
-            if (page == null) {
-                snkApi.getTitans()
 
-            } else {
-                snkApi.getTitansByUrl(page)
-            }
+            snkApi.getTitans()
+
 
         }
     }

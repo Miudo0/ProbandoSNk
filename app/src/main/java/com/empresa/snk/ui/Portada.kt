@@ -28,12 +28,14 @@ import kotlin.math.abs
 fun PortadaScreen(
     navigateToCharacters: () -> Unit,
     navigateToTitans: () -> Unit,
-    navigateToEpisodes: () -> Unit
+    navigateToEpisodes: () -> Unit,
+    navigateToOrganizations: () -> Unit
 ) {
     PortadaContent(
         navigateToCharacters,
         navigateToTitans,
-        navigateToEpisodes
+        navigateToEpisodes,
+        navigateToOrganizations
     )
 }
 
@@ -41,7 +43,8 @@ fun PortadaScreen(
 fun PortadaContent(
     navigateToCharacters: () -> Unit,
     navigateToTitans: () -> Unit,
-    navigateToEpisodes: () -> Unit
+    navigateToEpisodes: () -> Unit,
+    navigateToOrganizations: () -> Unit
 ) {
 
     Box(
@@ -62,7 +65,8 @@ fun PortadaContent(
             CarouselCircular(
                 navigateToCharacters,
                 navigateToTitans,
-                navigateToEpisodes
+                navigateToEpisodes,
+                navigateToOrganizations
             )
         }
     }
@@ -72,13 +76,15 @@ fun PortadaContent(
 fun CarouselCircular(
     navigateToCharacters: () -> Unit,
     navigateToTitans: () -> Unit,
-    navigateToEpisodes: () -> Unit
+    navigateToEpisodes: () -> Unit,
+    navigateToOrganizations: () -> Unit
 
 ) {
     val images = listOf(
         R.drawable.characters,
         R.drawable.titans,
-        R.drawable.episodes
+        R.drawable.episodes,
+        R.drawable.organizations
     )
     val infinitePages = Int.MAX_VALUE // Simula páginas infinitas
     val startPage = infinitePages / 2 // Para empezar en el centro
@@ -111,6 +117,7 @@ fun CarouselCircular(
                                 0 -> navigateToCharacters()
                                 1 -> navigateToTitans()
                                 2 -> navigateToEpisodes()
+                                3 -> navigateToOrganizations()
                             }
                         }
                         .graphicsLayer(

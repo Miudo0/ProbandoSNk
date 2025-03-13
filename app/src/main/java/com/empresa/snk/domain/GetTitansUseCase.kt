@@ -9,9 +9,9 @@ import javax.inject.Inject
 class GetTitansUseCase @Inject constructor(
     private val titansRepository: TitansRepository
 ) {
-    suspend operator fun invoke(page: String?): TitansResponse {
+    suspend operator fun invoke(): TitansResponse {
         return withContext(IO){
-            titansRepository.getTitans(page)
+            titansRepository.getTitans()
         }
     }
 

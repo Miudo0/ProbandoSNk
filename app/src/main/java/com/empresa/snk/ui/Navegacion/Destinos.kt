@@ -13,3 +13,6 @@ object Episodes{
     val route = "episodesScreen"
 
 }
+object Organizations{
+    val route = "organizationsScreen"
+}

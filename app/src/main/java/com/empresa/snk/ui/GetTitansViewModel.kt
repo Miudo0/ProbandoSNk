@@ -19,13 +19,11 @@ class GetTitansViewModel @Inject constructor(
     private val  _state = MutableStateFlow<titansState>(titansState.Loading)
     val state: StateFlow<titansState> = _state
 
-    private var nextPage: String? = null
+
 
     fun getTitans() {
         viewModelScope.launch {
-            val response = getTitansUseCase(nextPage)
-            nextPage = response.info?.nextPage
-
+            val response = getTitansUseCase()
             val currentList = _state.value.let { state ->
                 if (state is titansState.Success) {
                     state.titans
@@ -38,7 +36,7 @@ class GetTitansViewModel @Inject constructor(
         }
     }
 
-    fun hasMorePagesTitans(): Boolean = nextPage != null
+
 
 }
 
