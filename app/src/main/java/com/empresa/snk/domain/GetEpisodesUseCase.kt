@@ -1,7 +1,7 @@
 package com.empresa.snk.domain
 
 import com.empresa.snk.data.repository.EpisodesRepository
-import com.empresa.snk.domain.EpisodesDomain.EpisodesResponse
+import com.empresa.snk.domain.episodesDomain.EpisodesResponse
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.withContext
 import javax.inject.Inject

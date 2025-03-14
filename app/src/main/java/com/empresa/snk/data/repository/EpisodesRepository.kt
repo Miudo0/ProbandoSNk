@@ -2,8 +2,8 @@ package com.empresa.snk.data.repository
 
 import android.util.Log
 import com.empresa.snk.data.network.SNKApi
-import com.empresa.snk.domain.EpisodesDomain.Episodes
-import com.empresa.snk.domain.EpisodesDomain.EpisodesResponse
+import com.empresa.snk.domain.episodesDomain.Episodes
+import com.empresa.snk.domain.episodesDomain.EpisodesResponse
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.withContext
 import javax.inject.Inject

@@ -1,4 +1,4 @@
-package com.empresa.snk.ui.Navegacion
+package com.empresa.snk.ui.navegacion
 
 object Portada {
     val route = "portadaScreen"
@@ -15,4 +15,7 @@ object Episodes{
 }
 object Organizations{
     val route = "organizationsScreen"
+}
+object Locations{
+    val route = "locationsScreen"
 }

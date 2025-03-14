@@ -1,7 +1,7 @@
 package com.empresa.snk.domain
 
 import com.empresa.snk.data.repository.OrganizationsRepository
-import com.empresa.snk.domain.OrganizationsDomain.OrganizationsResponse
+import com.empresa.snk.domain.organizationsDomain.OrganizationsResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject

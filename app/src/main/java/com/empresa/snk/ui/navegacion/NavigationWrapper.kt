@@ -1,4 +1,4 @@
-package com.empresa.snk.ui.Navegacion
+package com.empresa.snk.ui.navegacion
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.empresa.snk.ui.EpisodesScreen
+import com.empresa.snk.ui.LocationsScreen
 import com.empresa.snk.ui.OrganizationsScreen
 import com.empresa.snk.ui.PersonajesScreen
 import com.empresa.snk.ui.PortadaScreen
@@ -24,8 +25,10 @@ fun NavigarionWrapper(){
             PortadaScreen(
                 navigateToCharacters = { navController.navigate(Characters.route) },
                 navigateToTitans = { navController.navigate(Titans.route) },
-                navigateToEpisodes = { navController.navigate(Episodes.route) }
-                , navigateToOrganizations = {navController.navigate(Organizations.route)}
+                navigateToEpisodes = { navController.navigate(Episodes.route) },
+                navigateToOrganizations = {navController.navigate(Organizations.route)},
+                navigateToLocations = {navController.navigate(Locations.route)}
+
             )
         }
 
@@ -50,6 +53,11 @@ fun NavigarionWrapper(){
                 paddingValues = PaddingValues()
             )
 
+        }
+        composable(Locations.route) {
+            LocationsScreen(
+                paddingValues = PaddingValues()
+            )
         }
 
     }

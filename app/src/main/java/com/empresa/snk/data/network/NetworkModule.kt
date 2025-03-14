@@ -33,6 +33,11 @@ object NetworkModule {
         return retrofit.create(SNKApiOrganization::class.java)
 
     }
+    @Singleton
+    @Provides
+    fun provideSNKApiLocations(retrofit: Retrofit): SNKApiLocations {
+        return retrofit.create(SNKApiLocations::class.java)
+    }
 
 
 }

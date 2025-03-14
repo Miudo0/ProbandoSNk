@@ -8,7 +8,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import com.empresa.snk.ui.Navegacion.NavigarionWrapper
+import com.empresa.snk.ui.navegacion.NavigarionWrapper
 import com.empresa.snk.ui.theme.SNKTheme
 import dagger.hilt.android.AndroidEntryPoint
 

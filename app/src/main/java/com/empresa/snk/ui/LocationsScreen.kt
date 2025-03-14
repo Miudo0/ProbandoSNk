@@ -1,5 +1,6 @@
 package com.empresa.snk.ui
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,67 +21,75 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 
+
 @Composable
-fun OrganizationsScreen(
+fun LocationsScreen(
     paddingValues: PaddingValues,
-    viewModel: GetAllOrganizationsViewModel = hiltViewModel()
+
+    ) {
+    LocationsContent()
+
+}
+
+@Composable
+fun LocationsContent(
+    viewModel: GetAllLocationsViewModel = hiltViewModel(),
+    viewModelDebut: GetEpisodesDetailViewModel = hiltViewModel()
 ) {
-    val state by viewModel.organizations.collectAsState()
+    val locationsState = viewModel.locations.collectAsState()
+    val episodesState by viewModelDebut.episodeName.collectAsState()
+
+
 
     LaunchedEffect(Unit) {
-        viewModel.getOrganizations()
-
+        viewModel.getLocations()
     }
 
-    when (val current = state) {
-        is OrganizationsState.Success -> {
-            val organizations = current.organizations
-            if (organizations.isNotEmpty()) {
+    when (val current = locationsState.value) {
+        is LocationsState.Success -> {
+            val locations = current.locations
+            if (locations.isNotEmpty()) {
                 LazyColumn(
-                    contentPadding = paddingValues,
+
                     modifier = Modifier.padding(16.dp)
                 ) {
-                    items(organizations) { organization ->
+                    items(locations) { locations ->
+
                         Column(
                             modifier = Modifier
                                 .padding(16.dp)
                                 .fillMaxWidth()
                         ) {
-                            organization.img?.let {
-                                OrganizationImage(
+                            locations.img?.let {
+                                Log.d("Greeting", "Character Image URL: $it")
+                                LocationsImage(
                                     it,
                                     modifier = Modifier
                                         .fillMaxWidth()
-
                                 )
                             }
-                            Text(text = organization.name ?: "Desconocido")
-                         //   Text(text = organization.debut ?: "Desconocido")
-                            Text(text = organization.affiliation ?: "Desconocido")
-
                         }
+                        Text(text = locations.name ?: "Desconocido")
+                        Text(text = locations.territory ?: "Desconocido")
+                        Text(text = locations.region ?: "Desconocido")
+
 
                     }
                 }
-
             }
         }
 
-        is OrganizationsState.Error -> {
-            Text(text = current.message)
+        is LocationsState.Error -> {
+            Text(text = "Error")
         }
 
-        is OrganizationsState.Loading -> {
-            CircularIndicator()
+        is LocationsState.Loading -> {
         }
     }
 }
-@Composable
-fun OrganizationImage(
-    imageUrl: String?,
-    modifier: Modifier = Modifier
 
-) {
+@Composable
+fun LocationsImage(imageUrl: String?, modifier: Modifier = Modifier) {
     imageUrl?.let {
 
         AsyncImage(
@@ -89,10 +98,9 @@ fun OrganizationImage(
                 .crossfade(true)
                 .build(),
 
-            contentDescription = "Imagen de Organizacion",
+            contentDescription = "Imagen del personaje",
             contentScale = ContentScale.Crop,
             modifier = modifier
-
 
         )
     }

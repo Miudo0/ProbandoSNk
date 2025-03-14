@@ -29,13 +29,15 @@ fun PortadaScreen(
     navigateToCharacters: () -> Unit,
     navigateToTitans: () -> Unit,
     navigateToEpisodes: () -> Unit,
-    navigateToOrganizations: () -> Unit
+    navigateToOrganizations: () -> Unit,
+    navigateToLocations: () -> Unit
 ) {
     PortadaContent(
         navigateToCharacters,
         navigateToTitans,
         navigateToEpisodes,
-        navigateToOrganizations
+        navigateToOrganizations,
+        navigateToLocations
     )
 }
 
@@ -44,7 +46,8 @@ fun PortadaContent(
     navigateToCharacters: () -> Unit,
     navigateToTitans: () -> Unit,
     navigateToEpisodes: () -> Unit,
-    navigateToOrganizations: () -> Unit
+    navigateToOrganizations: () -> Unit,
+    navigateToLocations: () -> Unit
 ) {
 
     Box(
@@ -66,7 +69,8 @@ fun PortadaContent(
                 navigateToCharacters,
                 navigateToTitans,
                 navigateToEpisodes,
-                navigateToOrganizations
+                navigateToOrganizations,
+                navigateToLocations
             )
         }
     }
@@ -77,14 +81,16 @@ fun CarouselCircular(
     navigateToCharacters: () -> Unit,
     navigateToTitans: () -> Unit,
     navigateToEpisodes: () -> Unit,
-    navigateToOrganizations: () -> Unit
+    navigateToOrganizations: () -> Unit,
+    navigateToLocations: () -> Unit
 
 ) {
     val images = listOf(
         R.drawable.characters,
         R.drawable.titans,
         R.drawable.episodes,
-        R.drawable.organizations
+        R.drawable.organizations,
+        R.drawable.locations
     )
     val infinitePages = Int.MAX_VALUE // Simula páginas infinitas
     val startPage = infinitePages / 2 // Para empezar en el centro
@@ -118,6 +124,7 @@ fun CarouselCircular(
                                 1 -> navigateToTitans()
                                 2 -> navigateToEpisodes()
                                 3 -> navigateToOrganizations()
+                                4 -> navigateToLocations()
                             }
                         }
                         .graphicsLayer(
