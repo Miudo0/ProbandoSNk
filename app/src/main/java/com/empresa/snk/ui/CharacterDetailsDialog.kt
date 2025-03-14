@@ -39,13 +39,30 @@ fun CharacterDetailsDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(text = personaje.name ?: "Desconocido") },
+        title = {
+            Text(
+                text = personaje.name ?: "Desconocido",
+                modifier = Modifier
+                    .fillMaxWidth(),
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+            )
+                },
         text = {
-            LazyColumn(modifier = Modifier.fillMaxWidth()) {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
                 item {
-                    Row() {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ) {
                         personaje.img?.let {
-                            CharacterImageInfo(it)
+                            CharacterImageInfo(
+                                it,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                            )
                         }
                     }
                 }
@@ -61,11 +78,11 @@ fun CharacterDetailsDialog(
                     }
                 }
                 item {
-                    Text(text = "Alias: ${personaje.alias}")
+                    Text(text = "Alias: ${personaje.alias.joinToString(", ")}")
                 }
                 item {
                     personaje.occupation?.let {
-                        Text(text = "occupation: $it")
+                        Text(text = "Occupation: $it")
                     }
                 }
                 item {
@@ -74,7 +91,7 @@ fun CharacterDetailsDialog(
                     }
                 }
                 item {
-                    Text(text = "Species: ${personaje.species}")
+                    Text(text = "Species: ${personaje.species.joinToString(", ")}")
                 }
                 item {
                     personaje.height?.let {

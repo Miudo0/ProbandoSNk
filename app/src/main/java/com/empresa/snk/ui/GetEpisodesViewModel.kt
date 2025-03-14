@@ -2,8 +2,8 @@ package com.empresa.snk.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.empresa.snk.domain.episodesDomain.Episodes
 import com.empresa.snk.domain.GetEpisodesUseCase
+import com.empresa.snk.domain.episodesDomain.Episodes
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -32,7 +32,7 @@ class GetEpisodesViewModel @Inject constructor(
         }
     }
 
-    fun hasMorePagesTitans(): Boolean = nextPage != null
+    fun hasMorePagesEpisodes(): Boolean = nextPage != null
 
 }
 sealed interface EpisodesState{

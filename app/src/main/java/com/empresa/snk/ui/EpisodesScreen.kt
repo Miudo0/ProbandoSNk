@@ -1,6 +1,9 @@
 package com.empresa.snk.ui
 
+import android.content.Context
+import android.content.Intent
 import android.util.Log
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,16 +20,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 
-
 @Composable
     fun EpisodesScreen(
       paddingValues: PaddingValues,
-      viewModel: GetEpisodesViewModel = hiltViewModel()
+      viewModel: GetEpisodesViewModel = hiltViewModel(),
+      context: Context
     ){
         val state by viewModel.episodes.collectAsState()
 
@@ -38,17 +42,22 @@ import coil3.request.crossfade
             is EpisodesState.Success -> {
                 val episodes = current.episodes
                 if (episodes.isNotEmpty()) {
-                    LazyColumn (contentPadding = paddingValues,
+                    LazyColumn(
+                        contentPadding = paddingValues,
 
-                    ) {
+                        ) {
 
-                        items(episodes) { Episodes ->
+                        items(episodes) { episodes ->
 
                             Column(modifier = Modifier
                                 .padding(16.dp)
                                 .fillMaxWidth()
+                                .clickable {
+                                    val url = "https://www.crunchyroll.com/${episodes.name}"
+                                    openUrl(context, url)
+                                }
                             ) {
-                                Episodes.img?.let {
+                                episodes.img?.let {
                                     Log.d("Greeting", "Character Image URL: $it")
                                   EpisodesImage(
                                       it,
@@ -59,13 +68,13 @@ import coil3.request.crossfade
                                       )
 
                                 }
-                                Text(text = Episodes.name ?: "Desconocido")
-                                Text(text = Episodes.episode ?: "Desconocido")
+                                Text(text = episodes.name ?: "Desconocido")
+                                Text(text = episodes.episode ?: "Desconocido")
 
                             }
                         }
                         item{
-                            if(viewModel.hasMorePagesTitans()){
+                            if(viewModel.hasMorePagesEpisodes()){
                                 viewModel.getEpisodes()
                             }
 
@@ -103,4 +112,9 @@ import coil3.request.crossfade
             )
         }
     }
+// Función para abrir la URL en el navegador
+fun openUrl(context: Context, url: String) {
+    val intent = Intent(Intent.ACTION_VIEW, url.toUri())
+    context.startActivity(intent)
+}
 

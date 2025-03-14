@@ -75,7 +75,13 @@ fun LocationsContent(
 
 
                     }
+                    item {
+                        if (viewModel.hasMorePages()) {
+                            viewModel.getLocations()
+                        }
+                    }
                 }
+
             }
         }
 

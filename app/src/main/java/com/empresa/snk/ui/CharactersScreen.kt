@@ -2,6 +2,8 @@ package com.empresa.snk.ui
 
 import android.util.Log
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -35,29 +38,39 @@ fun PersonajesScreen(paddingValues: PaddingValues) {
     val searchText = remember { mutableStateOf("") }
     val selectedPersonaje = remember { mutableStateOf<Personaje?>(null) }
 
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        // Imagen de fondo
+//        Image(
+//            painter = painterResource(id = R.drawable.fondolistapersonajes), // Reemplaza con tu imagen
+//            contentDescription = "Fondo",
+//            contentScale = ContentScale.Crop,
+//            modifier = Modifier.fillMaxSize()
+//        )
 
-    Column(modifier = Modifier.fillMaxSize()) {
-    //  SnkTopAppBar( searchText  = searchText)
-      SearchBar(
-          modifier = Modifier
-              .fillMaxWidth()
-              .padding(paddingValues),
-          searchText = searchText)
-      //  SearchBar(searchText = searchText,  modifier = Modifier.fillMaxWidth())
-        Personajes(
-            searchText = searchText,
+        Column(modifier = Modifier.fillMaxSize()) {
+            //  SnkTopAppBar( searchText  = searchText)
+            SearchBar(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(paddingValues),
+                searchText = searchText
+            )
+            //  SearchBar(searchText = searchText,  modifier = Modifier.fillMaxWidth())
+            Personajes(
+                searchText = searchText,
 
-            onCharacterClick = { character -> selectedPersonaje.value = character }
-        )
-        selectedPersonaje.value?.let { character ->
-            CharacterDetailsDialog(
-                personaje = character,
-                onDismiss = { selectedPersonaje.value = null })
+                onCharacterClick = { character -> selectedPersonaje.value = character }
+            )
+            selectedPersonaje.value?.let { character ->
+                CharacterDetailsDialog(
+                    personaje = character,
+                    onDismiss = { selectedPersonaje.value = null })
+            }
         }
     }
-
 }
-
 
 
 @Composable
@@ -101,7 +114,12 @@ fun Personajes(
 
     // Mostrar los personajes en una lista o grid
     LazyVerticalGrid(
-        columns = androidx.compose.foundation.lazy.grid.GridCells.Fixed(2)
+        columns = androidx.compose.foundation.lazy.grid.GridCells.Fixed(2),
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(8.dp),
+        horizontalArrangement = Arrangement.Center,
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+
     ) {
         items(personajes) { character ->
             Column(
@@ -110,11 +128,22 @@ fun Personajes(
                     .clickable {
                         onCharacterClick(character)
                     }
+                    .fillMaxWidth(),
+                verticalArrangement = Arrangement.Center
+
             ) {
                 character.img?.let {
                     CharacterImage(it)
                 }
-                Text(text = character.name ?: "Desconocido")
+                Text(
+                    text = character.name ?: "Desconocido",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                    style = MaterialTheme.typography.bodyLarge
+
+                )
             }
         }
         item {
@@ -138,13 +167,17 @@ fun CharacterImage(imageUrl: String?) {
 
             contentDescription = "Imagen del personaje",
             contentScale = ContentScale.Crop,
-            modifier = Modifier.clip(CircleShape),
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(CircleShape),
+            alignment = androidx.compose.ui.Alignment.Center
+
         )
     }
 }
 
 @Composable
-fun CharacterImageInfo(imageUrl: String?) {
+fun CharacterImageInfo(imageUrl: String?, modifier: Modifier = Modifier) {
     imageUrl?.let {
         Log.d("CharacterImage", "URL de la imagen: $it")
         AsyncImage(
@@ -155,7 +188,8 @@ fun CharacterImageInfo(imageUrl: String?) {
 
             contentDescription = "Imagen del personaje",
             contentScale = ContentScale.Crop,
-            modifier = Modifier
+            modifier = modifier
+                .fillMaxWidth()
 
 
         )
