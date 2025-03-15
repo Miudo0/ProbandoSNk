@@ -1,8 +1,9 @@
-package com.empresa.snk.domain.OrganizationsDomain
+package com.empresa.snk.domain.locationsDomain
 
 import com.google.gson.annotations.SerializedName
 
-data class InfoOrganizations (
+
+data class InfoLocations (
 
     @SerializedName("count"     ) var count    : Int?    = null,
     @SerializedName("pages"     ) var pages    : Int?    = null,

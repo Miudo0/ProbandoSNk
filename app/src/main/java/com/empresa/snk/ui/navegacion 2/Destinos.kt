@@ -1,4 +1,4 @@
-package com.empresa.snk.ui.Navegacion
+package com.empresa.snk.ui.navegacion
 
 object Portada {
     val route = "portadaScreen"

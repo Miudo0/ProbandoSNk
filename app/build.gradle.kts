@@ -55,6 +55,7 @@ dependencies {
 
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.runtime.livedata)
+    implementation(libs.androidx.constraintlayout)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
 

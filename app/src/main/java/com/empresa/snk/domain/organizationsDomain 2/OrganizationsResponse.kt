@@ -1,4 +1,4 @@
-package com.empresa.snk.domain.OrganizationsDomain
+package com.empresa.snk.domain.organizationsDomain
 
 import com.google.gson.annotations.SerializedName
 

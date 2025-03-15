@@ -25,6 +25,7 @@ roomRuntime = "2.6.1"
 runtimeLivedata = "1.7.8"
 ui = "1.7.8"
 uiToolingPreview = "1.7.8"
+constraintlayout = "2.2.1"
 
 [libraries]
 androidx-activity-compose-v131 = { module = "androidx.activity:activity-compose", version.ref = "activityComposeVersion" }
@@ -61,6 +62,7 @@ kotlinx-Serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 androidx-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "runtimeLivedata" }
 ui = { module = "androidx.compose.ui:ui", version.ref = "ui" }
 ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "uiToolingPreview" }
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 
 
 

@@ -97,6 +97,7 @@ fun CarouselCircular(
     val pagerState = rememberPagerState(initialPage = startPage, pageCount = { infinitePages })
 
     Box(modifier = Modifier.fillMaxSize()) {
+
         HorizontalPager(
             state = pagerState,
             modifier = Modifier.fillMaxSize(),
