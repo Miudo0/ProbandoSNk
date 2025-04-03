@@ -1,4 +1,4 @@
-package com.empresa.snk.domain.EpisodesDomain
+package com.empresa.snk.domain.episodesDomain
 
 import com.google.gson.annotations.SerializedName
 

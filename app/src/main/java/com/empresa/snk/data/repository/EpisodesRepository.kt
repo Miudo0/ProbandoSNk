@@ -34,5 +34,12 @@ class EpisodesRepository @Inject constructor(
             }
         }
     }
+    //episodos por Season
+    suspend fun getEpisodesBySeason(season: String): EpisodesResponse{
+        return withContext(IO){
+            SNKApi.getEpisodesBySeason(season)
+        }
+    }
+
 
 }

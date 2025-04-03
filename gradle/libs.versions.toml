@@ -5,7 +5,7 @@ agp = "8.9.0"
 coilKtCoilCompose = "3.1.0"
 coilNetworkOkhttp = "3.1.0"
 converterGson = "2.9.0"
-hiltAndroid = "2.51.1"
+hiltAndroid = "2.55"
 hiltNavigationCompose = "1.2.0"
 kotlin = "2.1.0"
 coreKtx = "1.15.0"
@@ -28,10 +28,10 @@ uiToolingPreview = "1.7.8"
 constraintlayout = "2.2.1"
 
 [libraries]
-androidx-activity-compose-v131 = { module = "androidx.activity:activity-compose", version.ref = "activityComposeVersion" }
+
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
-androidx-lifecycle-runtime-ktx-v231 = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtxVersion" }
+
 androidx-material = { module = "androidx.compose.material:material", version.ref = "material" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomRuntime" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomRuntime" }

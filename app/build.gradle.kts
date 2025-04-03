@@ -37,6 +37,9 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
+    ksp {
+        arg("room.schemaLocation", "$projectDir/schemas")
+    }
     buildFeatures {
         compose = true
     }
@@ -47,8 +50,6 @@ dependencies {
     implementation(libs.ui)
     implementation(libs.androidx.material)
     implementation(libs.ui.tooling.preview)
-    implementation(libs.androidx.lifecycle.runtime.ktx.v231)
-    implementation(libs.androidx.activity.compose.v131)
 
 
 

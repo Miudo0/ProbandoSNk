@@ -1,10 +1,10 @@
 package com.empresa.snk.data.network
 
 
-import com.empresa.snk.domain.episodesDomain.Episodes
-import com.empresa.snk.domain.episodesDomain.EpisodesResponse
 import com.empresa.snk.domain.charactersDomain.CharactersResponse
 import com.empresa.snk.domain.charactersDomain.Personaje
+import com.empresa.snk.domain.episodesDomain.Episodes
+import com.empresa.snk.domain.episodesDomain.EpisodesResponse
 import com.empresa.snk.domain.titansDomain.TitansResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -58,5 +58,9 @@ interface SNKApi{
     @GET
     suspend fun  getEpisodesByCharacterUrl(@Url characterUrl: String): Episodes
 
+    @GET
+    suspend fun getEpisodesBySeason(@Query("episode") season: String): EpisodesResponse
 }
+
+
 

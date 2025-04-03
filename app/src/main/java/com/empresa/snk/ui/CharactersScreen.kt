@@ -1,6 +1,9 @@
 package com.empresa.snk.ui
 
 import android.util.Log
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,14 +26,19 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
+import com.empresa.snk.R
 import com.empresa.snk.domain.charactersDomain.Personaje
 import kotlinx.coroutines.delay
 
@@ -42,12 +51,14 @@ fun PersonajesScreen(paddingValues: PaddingValues) {
         modifier = Modifier.fillMaxSize()
     ) {
         // Imagen de fondo
-//        Image(
-//            painter = painterResource(id = R.drawable.fondolistapersonajes), // Reemplaza con tu imagen
-//            contentDescription = "Fondo",
-//            contentScale = ContentScale.Crop,
-//            modifier = Modifier.fillMaxSize()
-//        )
+        Image(
+            painter = painterResource(id = R.drawable.fondocharacters), // Reemplaza con tu imagen
+            contentDescription = "Fondo",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .fillMaxSize()
+                .alpha(0.6f)
+        )
 
         Column(modifier = Modifier.fillMaxSize()) {
             //  SnkTopAppBar( searchText  = searchText)
@@ -158,40 +169,59 @@ fun Personajes(
 @Composable
 fun CharacterImage(imageUrl: String?) {
     imageUrl?.let {
-        Log.d("CharacterImage", "URL de la imagen: $it")
-        AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(it)
-                .crossfade(true)
-                .build(),
-
-            contentDescription = "Imagen del personaje",
-            contentScale = ContentScale.Crop,
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(CircleShape),
-            alignment = androidx.compose.ui.Alignment.Center
+                .padding(8.dp) // Añadir espaciado
+                .clip(CircleShape) // Mantener la forma circular
+                .border(2.dp, Color.Gray, CircleShape) // Borde sutil
+                .shadow(8.dp, CircleShape, clip = true) // Sombra sutil
+                .background(Color.Black.copy(alpha = 0.1f)) // Fondo sutil
+        ) {
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(it)
+                    .crossfade(true)
+                    .build(),
 
-        )
+                contentDescription = "Imagen del personaje",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(CircleShape), // Mantener la forma circular en la imagen también
+
+                alignment = androidx.compose.ui.Alignment.Center
+
+            )
+        }
     }
 }
 
 @Composable
 fun CharacterImageInfo(imageUrl: String?, modifier: Modifier = Modifier) {
     imageUrl?.let {
-        Log.d("CharacterImage", "URL de la imagen: $it")
-        AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(it)
-                .crossfade(true)
-                .build(),
-
-            contentDescription = "Imagen del personaje",
-            contentScale = ContentScale.Crop,
+        Box(
             modifier = modifier
                 .fillMaxWidth()
+                .clip(RoundedCornerShape(16.dp)) // Bordes redondeados
+                .border(2.dp, Color.Gray, RoundedCornerShape(16.dp)) // Borde sutil
+                .shadow(8.dp, RoundedCornerShape(16.dp), clip = true) // Sombra sutil
+        ) {
+
+            Log.d("CharacterImage", "URL de la imagen: $it")
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(it)
+                    .crossfade(true)
+                    .build(),
+
+                contentDescription = "Imagen del personaje",
+                contentScale = ContentScale.Crop,
+                modifier = modifier
+                    .fillMaxWidth()
 
 
-        )
+            )
+        }
     }
 }

@@ -61,8 +61,9 @@ fun CharacterDetailsDialog(
             )
         },
         text = {
-            LazyColumn(modifier = Modifier
-                .fillMaxWidth(),
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
 
             ) {
@@ -84,6 +85,7 @@ fun CharacterDetailsDialog(
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
+                                mostrarGrupos(personaje)
                                 Text(text = "Family:")
                                 when (val current = familyNames) {
                                     is FamilyState.Success -> {
@@ -95,10 +97,14 @@ fun CharacterDetailsDialog(
                                             Text(text = family)
                                         }
                                     }
-                                    is FamilyState.Error -> { Text(text = "Error al cargar la familia") }
+
+                                    is FamilyState.Error -> {
+                                        Text(text = "Error al cargar la familia")
+                                    }
+
                                     is FamilyState.Loading -> {}
                                 }
-                                Text(text = "Groups: ${personaje.groups.joinToString(", ")}")
+                                //  Text(text = "Groups: ${personaje.groups.joinToString(", ")}")
 
                                 when (val current = episodeNames) {
                                     is NombresEpisodeState.Success -> {
@@ -109,8 +115,14 @@ fun CharacterDetailsDialog(
                                             }
                                         }
                                     }
-                                    is NombresEpisodeState.Error -> { Text(text = "Error al cargar los episodios") }
-                                    is NombresEpisodeState.Loading -> { Text(text = "Cargando episodios...") }
+
+                                    is NombresEpisodeState.Error -> {
+                                        Text(text = "Error al cargar los episodios")
+                                    }
+
+                                    is NombresEpisodeState.Loading -> {
+                                        Text(text = "Cargando episodios...")
+                                    }
                                 }
                             }
                         } else {
@@ -118,7 +130,8 @@ fun CharacterDetailsDialog(
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 personaje.img?.let {
-                                    CharacterImageInfo(it,
+                                    CharacterImageInfo(
+                                        it,
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .padding(16.dp)
@@ -151,5 +164,23 @@ fun CharacterDetailsDialog(
                 Text("Close")
             }
         }
+    )
+}
+
+@Composable
+fun mostrarGrupos(personaje: Personaje) {
+    Text(
+        text = "Groups: ${
+            personaje.groups.joinToString(", ") { group ->
+                // Mostrar el nombre del grupo
+                val subGroupsText = if (group.subGroups.isNotEmpty()) {
+                    // Si el grupo tiene subgrupos, los mostramos también
+                    " (${group.subGroups.joinToString(", ")})"
+                } else {
+                    "" // Si no tiene subgrupos, solo mostramos el nombre del grupo
+                }
+                "${group.name}$subGroupsText"
+            }
+        }"
     )
 }

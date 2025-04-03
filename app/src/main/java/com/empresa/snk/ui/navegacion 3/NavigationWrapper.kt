@@ -1,9 +1,8 @@
-package com.empresa.snk.ui.navegacion
+package com.empresa.snk.ui.Navegacion
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -46,7 +45,7 @@ fun NavigarionWrapper(){
         composable(Episodes.route) {
             EpisodesScreen(
                 paddingValues = PaddingValues(),
-                context = LocalContext.current
+                context = navController.context
             )
 
         }
