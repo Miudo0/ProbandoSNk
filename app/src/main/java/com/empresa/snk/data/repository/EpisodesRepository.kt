@@ -36,8 +36,21 @@ class EpisodesRepository @Inject constructor(
     }
     //episodos por Season
     suspend fun getEpisodesBySeason(season: String): EpisodesResponse{
-        return withContext(IO){
-            SNKApi.getEpisodesBySeason(season)
+//        return withContext(IO){
+//            Log.d("EpisodesRepository", "Fetching episodes from API for season: $season")
+//            val response = SNKApi.getEpisodesBySeason(season)
+//            Log.d("EpisodesRepository", "Response: ${response.results.size} episodes found.")
+//            response
+//        }
+        try {
+            // Log para verificar que se pasa el season correctamente
+            Log.d("EpisodesRepository", "Fetching episodes from API for season: $season")
+            val response = SNKApi.getEpisodesBySeason(season)
+            Log.d("EpisodesRepository", "Response: ${response.results.size} episodes found.")
+            return response
+        } catch (e: Exception) {
+            Log.e("EpisodesRepository", "Error in getEpisodesBySeason: ${e.message}")
+            throw e // Propagar el error para que se maneje adecuadamente
         }
     }
 

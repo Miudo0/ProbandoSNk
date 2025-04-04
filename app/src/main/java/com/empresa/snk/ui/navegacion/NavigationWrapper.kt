@@ -11,7 +11,7 @@ import androidx.navigation.compose.rememberNavController
 import com.empresa.snk.ui.EpisodesScreen
 import com.empresa.snk.ui.LocationsScreen
 import com.empresa.snk.ui.OrganizationsScreen
-import com.empresa.snk.ui.PersonajesScreen
+import com.empresa.snk.ui.PersonjesScreen
 import com.empresa.snk.ui.PortadaScreen
 import com.empresa.snk.ui.TitansScreen
 
@@ -34,7 +34,7 @@ fun NavigarionWrapper(){
         }
 
         composable(Characters.route) {
-           PersonajesScreen(
+         PersonjesScreen(
                paddingValues = PaddingValues()
            )
         }

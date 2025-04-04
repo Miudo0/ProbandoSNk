@@ -58,7 +58,7 @@ interface SNKApi{
     @GET
     suspend fun  getEpisodesByCharacterUrl(@Url characterUrl: String): Episodes
 
-    @GET
+    @GET("episodes")
     suspend fun getEpisodesBySeason(@Query("episode") season: String): EpisodesResponse
 }
 
