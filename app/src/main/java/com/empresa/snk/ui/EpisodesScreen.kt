@@ -17,7 +17,12 @@ import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -38,12 +43,36 @@ import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.empresa.snk.domain.episodesDomain.Episodes
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EpisodesScreen(
+fun EpisodesScreen(paddingValues: PaddingValues) {
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Episodes de Attack on Titan") },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary
+                )
+            )
+        },
+
+        content = { innerPadding->
+          EpisodesContent(innerPadding, context = LocalContext.current)
+        }
+    )
+}
+
+
+
+@Composable
+fun EpisodesContent(
     paddingValues: PaddingValues,
     viewModel: GetEpisodesViewModel = hiltViewModel(),
     viewModelBySeason: GetEpisodesBySeasonViewModel = hiltViewModel(),
     context: Context
+
 ) {
     val state by viewModel.episodes.collectAsState()
     val stateBySeason by viewModelBySeason.state.collectAsState()
