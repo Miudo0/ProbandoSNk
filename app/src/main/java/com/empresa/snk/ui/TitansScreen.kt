@@ -1,9 +1,12 @@
 package com.empresa.snk.ui
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -12,27 +15,54 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
+import com.empresa.snk.R
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TitansScreen(paddingValues: PaddingValues) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Titanes de Attack on Titan") },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary
+                )
+            )
+        },
+bottomBar = {},
+        content = { innerPadding ->
+            TitansContent(innerPadding)
+        }
+    )
+}
 
 @Composable
-fun TitansScreen(
+fun TitansContent(
     paddingValues: PaddingValues,
     viewModel: GetTitansViewModel = hiltViewModel(),
     inheritorViewModel: GetCurrentInheritorViewModel = hiltViewModel(),
@@ -46,123 +76,145 @@ fun TitansScreen(
         viewModel.getTitans()
     }
 
-
-    when (val current = state) {
-        is titansState.Success -> {
-            val titanes = current.titans
-            //puesteo asi porque me hacia bucle infinito en lazycolumn
-            titanes.forEach { titan ->
-                titan.currentInheritor?.let {
-                    if (!currentInheritors.containsKey(it)) {
-                        inheritorViewModel.getCurrentInheritor(it)
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.titanesfondo),
+            contentDescription = "Fondo",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .fillMaxSize()
+                .alpha(0.6f)
+        )
+        when (val current = state) {
+            is titansState.Success -> {
+                val titanes = current.titans
+                //puesteo asi porque me hacia bucle infinito en lazycolumn
+                titanes.forEach { titan ->
+                    titan.currentInheritor?.let {
+                        if (!currentInheritors.containsKey(it)) {
+                            inheritorViewModel.getCurrentInheritor(it)
+                        }
+                    }
+                    titan.formerInheritors.let {
+                        if (!formerInheritors.containsKey(titan.id)) {
+                            //asi por si es nulo
+                            titan.id?.let { it1 ->
+                                formerInheritorViewModel.getFormerInheritors(
+                                    it1,
+                                    it
+                                )
+                            }
+                        }
                     }
                 }
-                titan.formerInheritors.let {
-                   if(!formerInheritors.containsKey(titan.id)){
-                       //asi por si es nulo
-                       titan.id?.let { it1 -> formerInheritorViewModel.getFormerInheritors(it1, it) }
-                   }
-                }
-            }
 
-            if (titanes.isNotEmpty()) {
-                LazyColumn(
-                    contentPadding = paddingValues,
-                    modifier = Modifier.padding(16.dp)
-                ) {
+                if (titanes.isNotEmpty()) {
+                    LazyColumn(
+                        contentPadding = paddingValues,
+                        modifier = Modifier.padding(16.dp)
+                    ) {
 
-                    items(titanes) { titan ->
-                        Card(
-                            modifier = Modifier
-                                .padding(16.dp)
-                                .fillParentMaxWidth(),
-                            shape = RoundedCornerShape(16.dp),
-                            elevation = CardDefaults.cardElevation(8.dp),
-                            colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceVariant
-                            ),
-
-                        ) {
-
-                            Row(modifier = Modifier.padding(16.dp)) {
-                                titan.img?.let {
-                                    TitansImage(it)
-
-                                }
-
-                                Column(
-                                    modifier = Modifier
-                                        .padding(start = 16.dp)
-                                        .align(Alignment.CenterVertically)
+                        items(titanes) { titan ->
+                            Card(
+                                modifier = Modifier
+                                    .padding(16.dp)
+                                    .fillParentMaxWidth(),
+                                shape = RoundedCornerShape(16.dp),
+                                elevation = CardDefaults.cardElevation(8.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                                ),
 
                                 ) {
 
-                                    Text(
-                                        text = titan.name ?: "Desconocido",
-                                        style = MaterialTheme.typography.titleLarge
-                                    )
-                                    Text(
-                                        text = "Height: " + (titan.height ?: "Desconocido"),
-                                        style = MaterialTheme.typography.bodySmall
+                                Row(modifier = Modifier.padding(16.dp)) {
+                                    titan.img?.let {
+                                        TitansImage(it)
 
-                                    )
-                                    Text(
-                                        text ="Allegiance: "+ (titan.allegiance ?: "Desconocido"),
-                                        style = MaterialTheme.typography.bodySmall
+                                    }
 
-                                    )
-                                    Text(
-                                        text = "Abilities: " + titan.abilities.joinToString(", "),
-                                        style = MaterialTheme.typography.bodySmall
-                                        )
-                                    titan.currentInheritor?.let {
-                                        val inheritor = currentInheritors[it] ?: "Desconocido"
+                                    Column(
+                                        modifier = Modifier
+                                            .padding(start = 16.dp)
+                                            .align(Alignment.CenterVertically)
+
+                                    ) {
+
                                         Text(
-                                            text = "Current Inheritor: $inheritor",
+                                            text = titan.name ?: "Desconocido",
+                                            style = MaterialTheme.typography.titleLarge
+                                        )
+                                        Text(
+                                            text = "Height: " + (titan.height ?: "Desconocido"),
                                             style = MaterialTheme.typography.bodySmall
+
+                                        )
+                                        Text(
+                                            text = "Allegiance: " + (titan.allegiance
+                                                ?: "Desconocido"),
+                                            style = MaterialTheme.typography.bodySmall
+
+                                        )
+                                        Text(
+                                            text = "Abilities: " + titan.abilities.joinToString(", "),
+                                            style = MaterialTheme.typography.bodySmall
+                                        )
+                                        titan.currentInheritor?.let {
+                                            val inheritor = currentInheritors[it] ?: "Desconocido"
+                                            Text(
+                                                text = "Current Inheritor: $inheritor",
+                                                style = MaterialTheme.typography.bodySmall
                                             )
 
-                                    }
-                                    // Mostrar los herederos anteriores
-                                    when (val current = formerInheritors[titan.id]) {
-                                        is FormerInheritorsState.Succes -> {
-                                            Text(text = "Former Inheritors: ",
-                                                style = MaterialTheme.typography.bodySmall)
-                                            current.inheritors.forEach { inheritor ->
-                                                Text(text = inheritor,
+                                        }
+                                        // Mostrar los herederos anteriores
+                                        when (val current = formerInheritors[titan.id]) {
+                                            is FormerInheritorsState.Succes -> {
+                                                Text(
+                                                    text = "Former Inheritors: ",
                                                     style = MaterialTheme.typography.bodySmall
+                                                )
+                                                current.inheritors.forEach { inheritor ->
+                                                    Text(
+                                                        text = inheritor,
+                                                        style = MaterialTheme.typography.bodySmall
                                                     )
+                                                }
                                             }
-                                        }
-                                        is FormerInheritorsState.Error -> {
-                                            Text(text = "Error al cargar los herederos anteriores")
-                                        }
-                                        is FormerInheritorsState.Loading -> {
+
+                                            is FormerInheritorsState.Error -> {
+                                                Text(text = "Error al cargar los herederos anteriores")
+                                            }
+
+                                            is FormerInheritorsState.Loading -> {
+
+                                            }
+
+                                            null -> {}
 
                                         }
-                                        null -> {}
+
 
                                     }
-
 
                                 }
-
                             }
                         }
                     }
                 }
             }
-        }
 
-        is titansState.Error -> {
-            Text(text = current.message)
-        }
+            is titansState.Error -> {
+                Text(text = current.message)
+            }
 
-        is titansState.Loading -> {
-            CircularIndicator()
+            is titansState.Loading -> {
+                CircularIndicator()
+            }
         }
     }
-
 }
 
 @Composable

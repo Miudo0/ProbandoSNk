@@ -100,7 +100,7 @@ fun CarouselCircular(
         R.drawable.locations to "Ubicaciones"
     )
     val infinitePages = Int.MAX_VALUE // Simula páginas infinitas
-    val startPage = infinitePages / 2 // Para empezar en el centro
+    val startPage = (infinitePages / 2) - (infinitePages / 2) % images.size
     val pagerState = rememberPagerState(initialPage = startPage, pageCount = { infinitePages })
 
     //calcular el centro
@@ -119,9 +119,8 @@ fun CarouselCircular(
             modifier = Modifier
                 .fillMaxSize()
                 .wrapContentHeight()
-
             ,
-            pageSpacing = 16.dp, // Espacio entre imágenes
+            pageSpacing = 8.dp, // Espacio entre imágenes
             contentPadding = PaddingValues(horizontal = padding),
             beyondViewportPageCount = 1,
             pageSize = PageSize.Fixed(220.dp),
