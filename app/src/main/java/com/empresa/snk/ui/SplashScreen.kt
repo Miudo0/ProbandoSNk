@@ -22,7 +22,7 @@ fun SplashScreen(onFinish: () -> Unit) {
 
     // 1. Arranca un temporizador de 2 s
     LaunchedEffect(Unit) {
-        delay(2000L)          // 2000 ms
+        delay(3000L)          // 2000 ms
         onFinish()
     }
 
