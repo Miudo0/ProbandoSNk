@@ -1,10 +1,17 @@
 package com.empresa.snk.ui
 
+
+import androidx.annotation.OptIn
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -14,22 +21,76 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PageSize
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.net.toUri
+import androidx.media3.common.C
+import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.ui.AspectRatioFrameLayout
+import androidx.media3.ui.PlayerView
 import com.empresa.snk.R
 import kotlin.math.abs
+
+
+@OptIn(UnstableApi::class)
+@Composable
+private fun VideoBackground(videoResId: Int) {
+    val context = LocalContext.current
+    // Create and remember the ExoPlayer
+    val exoPlayer = remember {
+        ExoPlayer.Builder(context).build().apply {
+            val mediaItem = MediaItem.fromUri("android.resource://${context.packageName}/$videoResId".toUri())
+            setMediaItem(mediaItem)
+            repeatMode = Player.REPEAT_MODE_ALL
+            playWhenReady = true
+            videoScalingMode = C.VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING
+            prepare()
+        }
+    }
+
+    // Release the player when the composable is removed from composition
+    DisposableEffect(Unit) {
+        onDispose { exoPlayer.release() }
+    }
+
+    AndroidView(
+        factory = {
+            PlayerView(it).apply {
+                player = exoPlayer
+                useController = false
+                resizeMode = AspectRatioFrameLayout.RESIZE_MODE_ZOOM
+                layoutParams = android.view.ViewGroup.LayoutParams(
+                    android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+                    android.view.ViewGroup.LayoutParams.MATCH_PARENT
+                )
+            }
+        },
+        modifier = Modifier.fillMaxSize()
+    )
+}
 
 @Composable
 fun PortadaScreen(
@@ -60,17 +121,26 @@ fun PortadaContent(
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.fondosnk),
-            contentDescription = "Portada de la App",
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
+        VideoBackground(videoResId = R.raw.fondo_portada)
+        // Scrim
+        Box(
+            Modifier
+                .fillMaxSize()
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            Color.Black.copy(alpha = .55f),
+                            Color.Transparent,
+                            Color.Black.copy(alpha = .75f)
+                        )
+                    )
+                )
         )
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.Center) // Pone el carrusel en la parte inferior
-                .height(300.dp)
+                .height(340.dp) // aumenta el alto para que el texto no se corte
         ) {
             CarouselCircular(
                 navigateToCharacters,
@@ -108,84 +178,108 @@ fun CarouselCircular(
     val padding = (screenWidth - 220.dp) / 2
 
 
-    Box(modifier = Modifier
-        .fillMaxSize(),
-        contentAlignment = Alignment.TopCenter
-
+    Box(
+        modifier = Modifier.fillMaxSize()
     ) {
-
-        HorizontalPager(
-            state = pagerState,
-            modifier = Modifier
-                .fillMaxSize()
-                .wrapContentHeight()
-            ,
-            pageSpacing = 8.dp, // Espacio entre imágenes
-            contentPadding = PaddingValues(horizontal = padding),
-            beyondViewportPageCount = 1,
-            pageSize = PageSize.Fixed(220.dp),
-
-            verticalAlignment = Alignment.CenterVertically,
-
-
-
-            ) { index ->
-            val (imageRes, title) = images[index % images.size]
-            val pageOffset = (index - pagerState.currentPage).toFloat()
-            val isMainPage = abs(pageOffset) < 0.5f
-
-            Column (
-                modifier = Modifier
-                    .fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            // --- Page indicators ---
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Card(
-                    shape = RoundedCornerShape(16.dp),
+                images.forEachIndexed { i, _ ->
+                    val selected = (pagerState.currentPage % images.size) == i
+                    val dotSize = if (selected) 10.dp else 6.dp
 
-                    elevation = androidx.compose.material3.CardDefaults.cardElevation(
-                        defaultElevation = 8.dp
-                    ),
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .clickable {
-                            when (index % images.size) {
-                                0 -> navigateToCharacters()
-                                1 -> navigateToTitans()
-                                2 -> navigateToEpisodes()
-                                3 -> navigateToOrganizations()
-                                4 -> navigateToLocations()
-                            }
-                        }
-                        .graphicsLayer(
-                            scaleX = 1f - 0.05f * abs(pageOffset),
-                            scaleY = 1f - 0.05f * abs(pageOffset),
-                            translationY = -abs(pageOffset) * 15f,
-                            alpha = 1f - 0.1f * abs(pageOffset),
-                            rotationY = pageOffset * 10f,
-                            cameraDistance = 8f
-                        )
-                        .size(240.dp)
-                ) {
-                    Image(
-                        painter = painterResource(id = imageRes),
-                        contentDescription = null,
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop
-                    )
-
-                }
-                if (isMainPage) {
-                    Text(
-                        text = title,
-                        style = MaterialTheme.typography.bodyMedium,
-                        textAlign = TextAlign.Center,
-                        color = Color.White,
+                    Box(
                         modifier = Modifier
-                            .padding(top = 8.dp)
+                            .size(dotSize)
+                            .clip(CircleShape)
+                            .background(
+                                if (selected) Color.White else Color.White.copy(alpha = 0.4f)
+                            )
                     )
                 }
             }
-        }
-    }
+            Spacer(modifier = Modifier.height(12.dp))
+            HorizontalPager(
+                state = pagerState,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .wrapContentHeight(),
+                pageSpacing = 8.dp, // Espacio entre imágenes
+                contentPadding = PaddingValues(horizontal = padding),
+                beyondViewportPageCount = 1,
+                pageSize = PageSize.Fixed(220.dp),
 
+                verticalAlignment = Alignment.CenterVertically,
+
+
+                ) { index ->
+                val (imageRes, title) = images[index % images.size]
+                val pageOffset = (index - pagerState.currentPage).toFloat()
+                val isMainPage = abs(pageOffset) < 0.5f
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Card(
+                        colors = androidx.compose.material3.CardDefaults.cardColors(
+                            containerColor = Color.White.copy(alpha = 0.15f)
+                        ),
+                        shape = RoundedCornerShape(16.dp),
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .clickable {
+                                when (index % images.size) {
+                                    0 -> navigateToCharacters()
+                                    1 -> navigateToTitans()
+                                    2 -> navigateToEpisodes()
+                                    3 -> navigateToOrganizations()
+                                    4 -> navigateToLocations()
+                                }
+                            }
+                            .graphicsLayer {
+                                scaleX = 1f - 0.05f * abs(pageOffset)
+                                scaleY = 1f - 0.05f * abs(pageOffset)
+                                translationY = -abs(pageOffset) * 15f
+                                alpha = 1f - 0.1f * abs(pageOffset)
+                                rotationY = pageOffset * 10f
+                                cameraDistance = 8f
+                            }
+                            .border(
+                                1.dp,
+                                Color.White.copy(alpha = 0.35f),
+                                RoundedCornerShape(16.dp)
+                            )
+                            .size(240.dp)
+                    ) {
+                        Image(
+                            painter = painterResource(id = imageRes),
+                            contentDescription = null,
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
+                    if (isMainPage) {
+                        Text(
+                            text = title.uppercase(),
+                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                            textAlign = TextAlign.Center,
+                            color = Color.White,
+                            modifier = Modifier
+                                .padding(top = 8.dp)
+                        )
+                    }
+                }
+            }
+        }
+
+    }
 }

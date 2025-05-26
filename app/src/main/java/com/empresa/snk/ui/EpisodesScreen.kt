@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,6 +17,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material3.Button
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -59,7 +61,10 @@ fun EpisodesScreen(paddingValues: PaddingValues) {
         },
 
         content = { innerPadding->
-          EpisodesContent(innerPadding, context = LocalContext.current)
+          EpisodesContent(
+              paddingValues = innerPadding,
+              context = LocalContext.current
+          )
         }
     )
 }
@@ -71,6 +76,7 @@ fun EpisodesContent(
     paddingValues: PaddingValues,
     viewModel: GetEpisodesViewModel = hiltViewModel(),
     viewModelBySeason: GetEpisodesBySeasonViewModel = hiltViewModel(),
+    setWatchedViewModel: SetWatchedEpisodeViewModel = hiltViewModel(),
     context: Context
 
 ) {
@@ -133,57 +139,14 @@ fun EpisodesContent(
                 else -> (stateBySeason as? GetEpisodesBySeasonViewModel.EpisodesStateBySeason.Success)?.episodes ?: emptyList()
             }
 
-
-//
-//            when (val current = state) {
-//                is EpisodesState.Success -> {
-//                    Column {
-//                        val episodes = current.episodes
-//                        if (episodes.isNotEmpty()) {
-//
-//                            LazyColumn(
-//                                contentPadding = paddingValues,
-//
-//                                ) {
-//
-//                                items(episodes) { episodes ->
-//
-//                                    Column(
-//                                        modifier = Modifier
-//                                            .padding(16.dp)
-//                                            .fillMaxWidth()
-//
-//                                    ) {
-//                                        episodes.img?.let {
-//                                            Log.d("Greeting", "Character Image URL: $it")
-//                                            EpisodesImage(
-//                                                it,
-//                                                modifier = Modifier
-//                                                    .fillMaxWidth()
-//                                                    .height(150.dp)
-//
-//                                            )
-//
-//                                        }
-//                                        Text(text = episodes.name ?: "Desconocido")
-//                                        Text(text = episodes.episode ?: "Desconocido")
-//
-//                                    }
-//                                }
-//                                item {
-//                                    if (viewModel.hasMorePagesEpisodes()) {
-//                                        viewModel.getEpisodes()
-//                                    }
-//
-//                                }
-//
-//                            }
-//                        }
             when {
                 episodesToShow.isNotEmpty() -> {
                     LazyColumn(contentPadding = paddingValues) {
                         items(episodesToShow) { episode ->
-                            EpisodeItem(episode)
+                            EpisodeItem(
+                                episode = episode,
+                                setWatchedViewModel = setWatchedViewModel
+                            )
                         }
                         item {
                             if (viewModel.hasMorePagesEpisodes()) {
@@ -221,7 +184,10 @@ fun EpisodesContent(
 
 
 @Composable
-fun EpisodesImage(imageUrl: String?, modifier: Modifier = Modifier) {
+fun EpisodesImage(
+    imageUrl: String?,
+    modifier: Modifier = Modifier
+) {
     imageUrl?.let {
 
         AsyncImage(
@@ -239,7 +205,20 @@ fun EpisodesImage(imageUrl: String?, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun EpisodeItem(episode: Episodes,context: Context = LocalContext.current) {
+fun EpisodeItem(
+    episode: Episodes,
+    context: Context = LocalContext.current,
+    viewModel: GetWatchedViewModel = hiltViewModel(),
+    setWatchedViewModel: SetWatchedEpisodeViewModel
+    ) {
+    LaunchedEffect(episode.id) {
+        episode.id?.let { viewModel.getWatched(it) }
+    }
+
+
+    val watchedMap by viewModel.watchedMap.collectAsState()
+    val isWatched = watchedMap[episode.id] ?: false
+
     Column(
         modifier = Modifier
             .padding(16.dp)
@@ -267,6 +246,25 @@ fun EpisodeItem(episode: Episodes,context: Context = LocalContext.current) {
         ) {
             Text("Ver serie en Crunchyroll")
         }
+        Row(
+            modifier = Modifier
+                .padding(top = 8.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Checkbox(
+                checked = isWatched,
+                onCheckedChange = { checked ->
+                    episode.id?.let { id ->
+                        setWatchedViewModel.SetWatchedEpisode(id, checked)
+                        // refresca inmediatamente el estado local
+                        viewModel.getWatched(id)
+                    }
+                },
+                modifier = Modifier.padding(end = 8.dp)
+            )
+            Text(text = "Visto")
+        }
     }
 }
 
@@ -275,4 +273,3 @@ fun openUrl(context: Context, url: String) {
     val intent = Intent(Intent.ACTION_VIEW, url.toUri())
     context.startActivity(intent)
 }
-
