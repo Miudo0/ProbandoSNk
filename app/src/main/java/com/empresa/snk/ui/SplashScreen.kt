@@ -20,7 +20,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun SplashScreen(onFinish: () -> Unit) {
 
-    // 1. Arranca un temporizador de 2 s
+    // 1. Arranca un temporizador
     LaunchedEffect(Unit) {
         delay(3000L)          // 2000 ms
         onFinish()
