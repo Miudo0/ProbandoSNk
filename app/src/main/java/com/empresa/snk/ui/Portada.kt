@@ -1,6 +1,15 @@
 package com.empresa.snk.ui
 
+// =========================================================================
+// PORTADA PRINCIPAL
+// -------------------------------------------------------------------------
+// Este archivo dibuja la pantalla inicial con:
+//   • Video de fondo a pantalla completa (ExoPlayer + PlayerView)
+//   • Capa “scrim” (degradado) para mejorar contraste
+//   • Carrusel infinito con imágenes + título y puntos indicadores
+// =========================================================================
 
+// ---------- IMPORTS -------------------------------------------------------
 import androidx.annotation.OptIn
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -59,10 +68,12 @@ import kotlin.math.abs
 @Composable
 private fun VideoBackground(videoResId: Int) {
     val context = LocalContext.current
-    // Create and remember the ExoPlayer
+
+    // Creamos y preparamos ExoPlayer una sola vez (remember) — ciclo de vida del Composable
     val exoPlayer = remember {
         ExoPlayer.Builder(context).build().apply {
-            val mediaItem = MediaItem.fromUri("android.resource://${context.packageName}/$videoResId".toUri())
+            val mediaItem =
+                MediaItem.fromUri("android.resource://${context.packageName}/$videoResId".toUri())
             setMediaItem(mediaItem)
             repeatMode = Player.REPEAT_MODE_ALL
             playWhenReady = true
@@ -71,17 +82,21 @@ private fun VideoBackground(videoResId: Int) {
         }
     }
 
-    // Release the player when the composable is removed from composition
+    // Liberamos recursos cuando el Composable sale de composición
     DisposableEffect(Unit) {
         onDispose { exoPlayer.release() }
     }
 
     AndroidView(
         factory = {
+            // PlayerView nativo embebido dentro de Compose
             PlayerView(it).apply {
                 player = exoPlayer
                 useController = false
-                resizeMode = AspectRatioFrameLayout.RESIZE_MODE_ZOOM
+                // scale‑to‑fit con zoom; llena toda la pantalla evitando bandas negras
+                // evita el re‑ajuste lento del SurfaceView
+                resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FILL
+                setShutterBackgroundColor(android.graphics.Color.TRANSPARENT)
                 layoutParams = android.view.ViewGroup.LayoutParams(
                     android.view.ViewGroup.LayoutParams.MATCH_PARENT,
                     android.view.ViewGroup.LayoutParams.MATCH_PARENT
@@ -118,11 +133,12 @@ fun PortadaContent(
     navigateToLocations: () -> Unit
 ) {
 
+    // ---------- UI de Portada ------------------------------------------------
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
         VideoBackground(videoResId = R.raw.fondo_portada)
-        // Scrim
+        // Degradado vertical (“scrim”) sobre el vídeo
         Box(
             Modifier
                 .fillMaxSize()
@@ -136,6 +152,7 @@ fun PortadaContent(
                     )
                 )
         )
+        // Carrusel + título (en una columna centrada)
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -162,6 +179,7 @@ fun CarouselCircular(
     navigateToLocations: () -> Unit
 
 ) {
+    // Pares (imagen, título) que se mostrarán en el carrusel
     val images = listOf(
         R.drawable.characters to "Personajes",
         R.drawable.titans to "Titanes",
@@ -169,6 +187,7 @@ fun CarouselCircular(
         R.drawable.organizations to "Organizaciones",
         R.drawable.locations to "Ubicaciones"
     )
+    // Pager infinito: comenzamos en la mitad de Int.MAX_VALUE para simular scroll circular
     val infinitePages = Int.MAX_VALUE // Simula páginas infinitas
     val startPage = (infinitePages / 2) - (infinitePages / 2) % images.size
     val pagerState = rememberPagerState(initialPage = startPage, pageCount = { infinitePages })
@@ -186,7 +205,7 @@ fun CarouselCircular(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // --- Page indicators ---
+            // ---------- Indicadores (puntos) ---------------------------------
             Row(
                 horizontalArrangement = Arrangement.spacedBy(6.dp),
                 verticalAlignment = Alignment.CenterVertically
@@ -206,6 +225,7 @@ fun CarouselCircular(
                 }
             }
             Spacer(modifier = Modifier.height(12.dp))
+            // ---------- Carrusel principal -----------------------------------
             HorizontalPager(
                 state = pagerState,
                 modifier = Modifier
@@ -246,6 +266,7 @@ fun CarouselCircular(
                                 }
                             }
                             .graphicsLayer {
+                                // Animaciones 3D (escala, rotación, alfa)
                                 scaleX = 1f - 0.05f * abs(pageOffset)
                                 scaleY = 1f - 0.05f * abs(pageOffset)
                                 translationY = -abs(pageOffset) * 15f

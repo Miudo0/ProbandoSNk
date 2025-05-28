@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
@@ -21,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -53,6 +55,10 @@ fun CharacterDetailsDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        shape = RoundedCornerShape(24.dp),
+        containerColor = Color.Black.copy(alpha = 0.8f),
+        titleContentColor = Color.White,
+        textContentColor = Color.White,
         title = {
             Text(
                 text = personaje.name ?: "Desconocido",
@@ -85,7 +91,7 @@ fun CharacterDetailsDialog(
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
-                                mostrarGrupos(personaje)
+                                MostrarGrupos(personaje)
                                 Text(text = "Family:")
                                 when (val current = familyNames) {
                                     is FamilyState.Success -> {
@@ -134,7 +140,6 @@ fun CharacterDetailsDialog(
                                         it,
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .padding(16.dp)
                                     )
                                 }
                                 Row {
@@ -163,12 +168,13 @@ fun CharacterDetailsDialog(
             Button(onClick = onDismiss) {
                 Text("Close")
             }
-        }
+        },
+        tonalElevation = 0.dp,
     )
 }
 
 @Composable
-fun mostrarGrupos(personaje: Personaje) {
+fun MostrarGrupos(personaje: Personaje) {
     Text(
         text = "Groups: ${
             personaje.groups.joinToString(", ") { group ->
