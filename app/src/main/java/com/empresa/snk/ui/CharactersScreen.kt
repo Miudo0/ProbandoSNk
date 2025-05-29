@@ -1,3 +1,12 @@
+/*
+ * Pantalla principal de personajes de Shingeki no Kyojin.
+ * Incluye:
+ *   • AppBar translúcido con degradado inferior.
+ *   • Barra de búsqueda reactiva (debounce 500 ms).
+ *   • Grid 2×N con tarjetas “glass” animadas.
+ *   • Al pulsar una tarjeta se abre un diálogo con detalles.
+ * Autor: (tu nombre) – Mayo 2025
+ */
 package com.empresa.snk.ui
 
 import android.util.Log
@@ -27,6 +36,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -64,13 +74,17 @@ import com.empresa.snk.R
 import com.empresa.snk.domain.charactersDomain.Personaje
 import kotlinx.coroutines.delay
 
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PersonjesScreen(paddingValues: PaddingValues) {
+    // Scaffold que aloja la TopAppBar y el contenido de personajes
 
     Scaffold(
         topBar = {
             TopAppBar(
+                // Título fijo
                 title = {
                     Text(
                         "Personajes • SNK",
@@ -81,6 +95,7 @@ fun PersonjesScreen(paddingValues: PaddingValues) {
                         color = Color.White
                     )
                 },
+                // Colores translúcidos y degradado al hacer scroll
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Black.copy(alpha = 0.35f),
                     scrolledContainerColor = Color.Black.copy(alpha = 0.65f),
@@ -88,6 +103,7 @@ fun PersonjesScreen(paddingValues: PaddingValues) {
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
+                    // Línea sutil inferior mediante drawRect
                     .drawBehind {
                         // subtle bottom gradient separator
                         drawRect(
@@ -103,24 +119,24 @@ fun PersonjesScreen(paddingValues: PaddingValues) {
                     }
             )
         },
-
         content = { innerPadding ->
+            // Contenido principal: búsqueda + grid de personajes
             PersonajesContent(innerPadding)
         }
     )
 }
 @Composable
 fun PersonajesContent(paddingValues: PaddingValues) {
+    // Estado para búsqueda y personaje seleccionado
     val searchText = remember { mutableStateOf("") }
     val selectedPersonaje = remember { mutableStateOf<Personaje?>(null) }
 
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        // Imagen de fondo
+        // Imagen de fondo con ligera transparencia
         Image(
             painter = painterResource(id = R.drawable.fondocharacters),
-
             contentDescription = "Fondo",
             contentScale = ContentScale.Crop,
             modifier = Modifier
@@ -129,19 +145,19 @@ fun PersonajesContent(paddingValues: PaddingValues) {
         )
 
         Column(modifier = Modifier.fillMaxSize()) {
-            //  SnkTopAppBar( searchText  = searchText)
+            // Barra de búsqueda reactiva
             SearchBar(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(paddingValues),
                 searchText = searchText
             )
-            //  SearchBar(searchText = searchText,  modifier = Modifier.fillMaxWidth())
+            // Grid de tarjetas filtrado por texto
             Personajes(
                 searchText = searchText,
-
                 onCharacterClick = { character -> selectedPersonaje.value = character }
             )
+            // Diálogo con detalles cuando hay un personaje seleccionado
             selectedPersonaje.value?.let { character ->
                 CharacterDetailsDialog(
                     personaje = character,
@@ -161,10 +177,11 @@ fun Personajes(
 
 
     ) {
+    // ViewModels para lista completa y filtrada
     val busqueda by getCharactersByNameViewmodel.state.collectAsState(GetCharactersByNameViewModel.FilterState.Loading)
     val state by viewModel.characters.collectAsState(CharacterState.Loading)
 
-    // Realiza la búsqueda cada vez que el searchText cambia
+    // Debounce de 500 ms: evita llamadas excesivas mientras se escribe
     LaunchedEffect(searchText.value) {
         delay(500)
         Log.d("Personajes", "Búsqueda 2 iniciada con texto: ${searchText.value}")
@@ -175,6 +192,19 @@ fun Personajes(
         }
     }
 
+    if ((searchText.value.isEmpty() && state is CharacterState.Loading) ||
+        (searchText.value.isNotEmpty() && busqueda is GetCharactersByNameViewModel.FilterState.Loading)
+    ) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularIndicator()
+        }
+        return
+    }
+
+    // Decide qué lista mostrar: completa o filtrada
     val personajes = when {
         searchText.value.isEmpty() -> {
             when (val current = state) {
@@ -182,7 +212,6 @@ fun Personajes(
                 else -> emptyList()
             }
         }
-
         else -> {
             when (val currentBusqueda = busqueda) {
                 is GetCharactersByNameViewModel.FilterState.Success -> currentBusqueda.personajes
@@ -191,7 +220,7 @@ fun Personajes(
         }
     }
 
-    // Mostrar los personajes en una lista o grid
+    // Grid 2 × N con espaciado uniforme
     LazyVerticalGrid(
         columns = androidx.compose.foundation.lazy.grid.GridCells.Fixed(2),
         modifier = Modifier.fillMaxSize(),
@@ -205,6 +234,7 @@ fun Personajes(
         verticalArrangement = Arrangement.spacedBy(4.dp, alignment = Alignment.Top)
     ) {
         items(personajes) { character ->
+            // Animación de fade + scale al aparecer cada tarjeta
             AnimatedVisibility(
                 visible = true,
                 enter = fadeIn(animationSpec = tween(300)) +
@@ -225,6 +255,7 @@ fun Personajes(
 @Composable
 fun CharacterImage(imageUrl: String?) {
     imageUrl?.let {
+        // Imagen circular con borde y fondo sutil
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -257,10 +288,12 @@ fun CharacterGlassCard(
     character: Personaje,
     onClick: () -> Unit
 ) {
+    // Tarjeta estilo "glassmorphism" con escala al presionar
     val interactionSource = remember { MutableInteractionSource() }
     val pressed by interactionSource.collectIsPressedAsState()
     val scale by animateFloatAsState(if (pressed) 0.96f else 1f, label = "scale")
 
+    // Wrapper Card con borde degradado y fondo semitransparente
     Card(
         onClick = onClick,
         interactionSource = interactionSource,
@@ -291,6 +324,7 @@ fun CharacterGlassCard(
             }
             .graphicsLayer { scaleX = scale; scaleY = scale }
     ) {
+        // Contenido de la tarjeta: imagen + nombre
         Column(
             horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally,
             modifier = Modifier.padding(16.dp)
@@ -321,6 +355,7 @@ fun CharacterGlassCard(
 
 @Composable
 fun CharacterImageInfo(imageUrl: String?, modifier: Modifier = Modifier) {
+    // Versión rectangular de la imagen con sombra y borde
     imageUrl?.let {
         Box(
             modifier = modifier

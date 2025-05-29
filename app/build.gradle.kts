@@ -99,4 +99,8 @@ dependencies {
     implementation(libs.androidx.media3.ui)
 
     implementation(libs.androidx.palette.ktx)
+
+    implementation (libs.accompanist.pager)
+    implementation (libs.accompanist.pager.indicators)
+
 }
