@@ -1,6 +1,7 @@
 package com.empresa.snk.data.repository
 
 import com.empresa.snk.data.network.SNKApiOrganization
+import com.empresa.snk.domain.charactersDomain.Personaje
 import com.empresa.snk.domain.organizationsDomain.OrganizationsResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -16,6 +17,15 @@ class OrganizationsRepository @Inject constructor(
         }
     }
 
+    suspend fun getNotableMembers(notableMembersUrl: String): Personaje {
+        return withContext(Dispatchers.IO){
+            try {
+                SNKApiOrganizations.getNotableMembers(notableMembersUrl)
+            } catch (e: Exception) {
+                null ?: Personaje()
+            }
+        }
+    }
 
 
 
