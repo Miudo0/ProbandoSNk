@@ -14,7 +14,6 @@ import androidx.annotation.OptIn
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -61,6 +60,7 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
 import com.empresa.snk.R
+import com.empresa.snk.ui.utils.clickWithSound
 import kotlin.math.abs
 
 
@@ -177,8 +177,8 @@ fun CarouselCircular(
     navigateToEpisodes: () -> Unit,
     navigateToOrganizations: () -> Unit,
     navigateToLocations: () -> Unit
-
 ) {
+    val context = LocalContext.current
     // Pares (imagen, título) que se mostrarán en el carrusel
     val images = listOf(
         R.drawable.characters to "Personajes",
@@ -256,7 +256,7 @@ fun CarouselCircular(
                         shape = RoundedCornerShape(16.dp),
                         modifier = Modifier
                             .padding(8.dp)
-                            .clickable {
+                            .clickWithSound(context) {
                                 when (index % images.size) {
                                     0 -> navigateToCharacters()
                                     1 -> navigateToTitans()

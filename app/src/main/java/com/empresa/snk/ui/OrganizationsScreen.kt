@@ -2,14 +2,20 @@ package com.empresa.snk.ui
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -96,6 +102,8 @@ fun OrganizationsContent(
 ) {
     val notableViewModel: GetNotableMembersViewModel = hiltViewModel()
     val notableMembers by notableViewModel.notableMembers.collectAsState()
+    val notableFormerViewModel: GetNotableFormerMembersViewModel = hiltViewModel()
+    val notableFormerMembers by notableFormerViewModel.notableFormerMembers.collectAsState()
     val state by viewModel.organizations.collectAsState()
 
     LaunchedEffect(Unit) {
@@ -129,6 +137,8 @@ fun OrganizationsContent(
                                     }
                                 }
                             }
+                            // NUEVO CONTENIDO DE LA TARJETA: estilo TitanCard + Pager
+                            val pagerState = androidx.compose.foundation.pager.rememberPagerState(initialPage = 0, pageCount = { 2 })
                             Card(
                                 shape = RoundedCornerShape(24.dp),
                                 border = BorderStroke(
@@ -154,15 +164,16 @@ fun OrganizationsContent(
                                         )
                                     }
                             ) {
-                                Column(
-                                    modifier = Modifier.padding(16.dp)
-                                ) {
+                                Column(modifier = Modifier.padding(16.dp)) {
                                     Text(
                                         text = organization.name ?: "Desconocido",
-                                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold)
+                                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
+                                        modifier = Modifier.fillMaxWidth(),
+                                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
                                     )
 
                                     Spacer(modifier = Modifier.height(8.dp))
+
                                     organization.img?.let {
                                         OrganizationImage(
                                             it,
@@ -171,39 +182,116 @@ fun OrganizationsContent(
                                                 .height(200.dp)
                                                 .clip(RoundedCornerShape(16.dp))
                                         )
-
                                     }
-                                    Spacer(modifier = Modifier.height(4.dp))
-                                    Text(
-                                        text = organization.occupations.joinToString(", "),
-                                        style = MaterialTheme.typography.bodySmall
-                                    )
 
-                                    Spacer(modifier = Modifier.height(4.dp))
-                                    Text(
-                                        text = organization.affiliation ?: "Desconocido",
-                                        style = MaterialTheme.typography.bodyMedium.copy(color = Color.White.copy(alpha = 0.7f))
-                                    )
-                                    Spacer(modifier = Modifier.height(8.dp))
-                                    Text(
-                                        text = "Miembros destacados:",
-                                        style = MaterialTheme.typography.bodySmall.copy(
-                                            fontWeight = FontWeight.SemiBold,
-                                            color = Color.White.copy(alpha = 0.8f)
-                                        )
-                                    )
-                                    if (organization.notableMembers.isEmpty()) {
-                                        Text(
-                                            text = "- Sin datos",
-                                            style = MaterialTheme.typography.bodySmall.copy(color = Color.White.copy(alpha = 0.5f))
-                                        )
-                                    } else {
-                                        organization.notableMembers.forEach { url ->
-                                            val nombre = notableMembers[url] ?: "Cargando..."
-                                            Text(
-                                                text = "- $nombre",
-                                                style = MaterialTheme.typography.bodySmall.copy(color = Color.White)
+                                    Spacer(modifier = Modifier.height(12.dp))
+
+                                    androidx.compose.foundation.pager.HorizontalPager(
+                                        state = pagerState,
+                                        pageSize = androidx.compose.foundation.pager.PageSize.Fill,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .heightIn(min = 100.dp)
+                                    ) { page ->
+                                        when (page) {
+                                            0 -> {
+                                                Column {
+                                                    Text(
+                                                        text = "Ocupaciones",
+                                                        fontWeight = FontWeight.SemiBold,
+                                                        color = Color.White.copy(alpha = 0.7f)
+                                                    )
+                                                    Spacer(modifier = Modifier.height(4.dp))
+                                                    Text(
+                                                        text = organization.occupations.joinToString(", "),
+                                                        style = MaterialTheme.typography.bodySmall
+                                                    )
+                                                    Spacer(modifier = Modifier.height(8.dp))
+                                                    Text(
+                                                        text = "Afiliación",
+                                                        fontWeight = FontWeight.SemiBold,
+                                                        color = Color.White.copy(alpha = 0.7f)
+                                                    )
+                                                    Spacer(modifier = Modifier.height(4.dp))
+                                                    Text(
+                                                        text = organization.affiliation?: "Desconocido",
+                                                        style = MaterialTheme.typography.bodySmall
+                                                    )
+                                                }
+                                            }
+                                            1 -> {
+                                                Column {
+                                                    Text(
+                                                        text = "Miembros destacados",
+                                                        fontWeight = FontWeight.SemiBold,
+                                                        color = Color.White.copy(alpha = 0.7f)
+                                                    )
+                                                    Spacer(modifier = Modifier.height(4.dp))
+                                                    if (organization.notableMembers.isEmpty()) {
+                                                        Text(
+                                                            text = "- Sin datos",
+                                                            style = MaterialTheme.typography.bodySmall.copy(color = Color.White.copy(alpha = 0.5f))
+                                                        )
+                                                    } else {
+                                                        organization.notableMembers.forEach { url ->
+                                                            val nombre = notableMembers[url] ?: "Cargando..."
+                                                            Text(
+                                                                text = "- $nombre",
+                                                                style = MaterialTheme.typography.bodySmall.copy(color = Color.White)
+                                                            )
+                                                        }
+                                                    }
+
+                                                    LaunchedEffect(organization.notableFormerMembers) {
+                                                        organization.notableFormerMembers.forEach { url ->
+                                                            if (!notableFormerMembers.containsKey(url)) {
+                                                                notableFormerViewModel.getNotableFormerMembers(url)
+                                                            }
+                                                        }
+                                                    }
+
+                                                    Spacer(modifier = Modifier.height(12.dp))
+                                                    Text(
+                                                        text = "Antiguos miembros destacados",
+                                                        fontWeight = FontWeight.SemiBold,
+                                                        color = Color.White.copy(alpha = 0.7f)
+                                                    )
+                                                    Spacer(modifier = Modifier.height(4.dp))
+                                                    if (organization.notableFormerMembers.isEmpty()) {
+                                                        Text(
+                                                            text = "- Sin datos",
+                                                            style = MaterialTheme.typography.bodySmall.copy(color = Color.White.copy(alpha = 0.5f))
+                                                        )
+                                                    } else {
+                                                        organization.notableFormerMembers.forEach { url ->
+                                                            val nombre = notableFormerMembers[url] ?: "Cargando..."
+                                                            Text(
+                                                                text = "- $nombre",
+                                                                style = MaterialTheme.typography.bodySmall.copy(color = Color.White)
+                                                            )
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    Spacer(modifier = Modifier.height(6.dp))
+
+                                    Row(
+                                        horizontalArrangement = Arrangement.Center,
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        repeat(2) { i ->
+                                            val selected = pagerState.currentPage == i
+                                            val size = if (selected) 10.dp else 6.dp
+                                            Box(
+                                                modifier = Modifier
+                                                    .size(size)
+                                                    .clip(androidx.compose.foundation.shape.CircleShape)
+                                                    .background(if (selected) Color.White else Color.White.copy(alpha = 0.4f))
                                             )
+                                            if (i < 1) Spacer(modifier = Modifier.width(6.dp))
                                         }
                                     }
                                 }
@@ -212,7 +300,6 @@ fun OrganizationsContent(
                     }
                 }
             }
-
             is OrganizationsState.Error -> {
                 Text(text = current.message)
             }

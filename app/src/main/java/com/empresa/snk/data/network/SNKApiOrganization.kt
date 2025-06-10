@@ -14,6 +14,6 @@ interface SNKApiOrganization {
     suspend fun getNotableMembers(@Url notableMembersUrl: String): Personaje
 
     @GET
-    suspend fun getOccupations(@Url occupationsUrl: String): String
+    suspend fun getNotableFormerMembers(@Url notableFormerMembersUrl: String): Personaje
 
 }

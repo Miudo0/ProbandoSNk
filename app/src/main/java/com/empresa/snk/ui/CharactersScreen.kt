@@ -36,7 +36,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -72,8 +71,8 @@ import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.empresa.snk.R
 import com.empresa.snk.domain.charactersDomain.Personaje
+import com.empresa.snk.ui.utils.clickWithSound
 import kotlinx.coroutines.delay
-
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -293,10 +292,10 @@ fun CharacterGlassCard(
     val pressed by interactionSource.collectIsPressedAsState()
     val scale by animateFloatAsState(if (pressed) 0.96f else 1f, label = "scale")
 
+    val context = LocalContext.current
+
     // Wrapper Card con borde degradado y fondo semitransparente
     Card(
-        onClick = onClick,
-        interactionSource = interactionSource,
         shape = RoundedCornerShape(24.dp),
         border = BorderStroke(
             1.dp,
@@ -323,10 +322,12 @@ fun CharacterGlassCard(
                 )
             }
             .graphicsLayer { scaleX = scale; scaleY = scale }
+            .clickWithSound(context, interactionSource) { onClick() }
+
     ) {
         // Contenido de la tarjeta: imagen + nombre
         Column(
-            horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally,
+            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.padding(16.dp)
         ) {
             character.img?.let {

@@ -27,6 +27,15 @@ class OrganizationsRepository @Inject constructor(
         }
     }
 
+    suspend fun getNotableFormerMembers(notableFormerMembersUrl: String): Personaje {
+        return withContext(Dispatchers.IO){
+            try {
+                SNKApiOrganizations.getNotableMembers(notableFormerMembersUrl)
+            } catch (e: Exception) {
+                null ?: Personaje()
+            }
+        }
+    }
 
 
 }
