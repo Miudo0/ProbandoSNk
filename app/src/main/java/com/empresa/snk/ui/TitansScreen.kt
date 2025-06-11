@@ -62,6 +62,7 @@ import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.empresa.snk.R
 import com.empresa.snk.domain.titansDomain.Titan
+import com.empresa.snk.ui.utils.PlaySoundOnPageChange
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -207,8 +208,11 @@ fun TitanCard(
     currentInheritorName: String?,
     formerInheritors: List<String>
 ) {
+    val context = LocalContext.current
     // Pager interno para la tarjeta (3 páginas)
     val pagerState = rememberPagerState(initialPage = 0, pageCount = { 3 })
+
+    pagerState.PlaySoundOnPageChange(context)
 
     // Efecto de escala al presionar (igual que CharacterGlassCard)
     val interactionSource = remember { MutableInteractionSource() }

@@ -48,6 +48,7 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.empresa.snk.R
+import com.empresa.snk.ui.utils.PlaySoundOnPageChange
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -105,6 +106,7 @@ fun OrganizationsContent(
     val notableFormerViewModel: GetNotableFormerMembersViewModel = hiltViewModel()
     val notableFormerMembers by notableFormerViewModel.notableFormerMembers.collectAsState()
     val state by viewModel.organizations.collectAsState()
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         viewModel.getOrganizations()
@@ -139,6 +141,8 @@ fun OrganizationsContent(
                             }
                             // NUEVO CONTENIDO DE LA TARJETA: estilo TitanCard + Pager
                             val pagerState = androidx.compose.foundation.pager.rememberPagerState(initialPage = 0, pageCount = { 2 })
+
+                            pagerState.PlaySoundOnPageChange(context)
                             Card(
                                 shape = RoundedCornerShape(24.dp),
                                 border = BorderStroke(

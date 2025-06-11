@@ -11,9 +11,12 @@ package com.empresa.snk.ui
 
 // ---------- IMPORTS -------------------------------------------------------
 import androidx.annotation.OptIn
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,6 +39,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -60,6 +64,7 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
 import com.empresa.snk.R
+import com.empresa.snk.ui.utils.PlaySoundOnPageChange
 import com.empresa.snk.ui.utils.clickWithSound
 import kotlin.math.abs
 
@@ -156,9 +161,18 @@ fun PortadaContent(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .align(Alignment.Center) // Pone el carrusel en la parte inferior
-                .height(340.dp) // aumenta el alto para que el texto no se corte
+                .align(Alignment.TopCenter) // Pone el carrusel más arriba
+                .padding(top = 160.dp) // Espacio superior en vez de altura fija
         ) {
+            // Logo en la parte superior
+            Image(
+                painter = painterResource(id = R.drawable.logo_portada),
+                contentDescription = "Logo",
+                modifier = Modifier
+                    .height(80.dp)
+                    .padding(top = 16.dp)
+                    .align(Alignment.CenterHorizontally)
+            )
             CarouselCircular(
                 navigateToCharacters,
                 navigateToTitans,
@@ -195,7 +209,7 @@ fun CarouselCircular(
     //calcular el centro
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
     val padding = (screenWidth - 220.dp) / 2
-
+    pagerState.PlaySoundOnPageChange(context)
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -241,8 +255,25 @@ fun CarouselCircular(
 
                 ) { index ->
                 val (imageRes, title) = images[index % images.size]
+
+                // Fuente de interacción para detectar si el usuario está pulsando la tarjeta
+                val interactionSource = remember { MutableInteractionSource() }
+                // Estado booleano que indica si la tarjeta está siendo presionada
+                val pressed by interactionSource.collectIsPressedAsState()
+                // Animación de escala: si está presionada, reduce el tamaño ligeramente
+                val scale by animateFloatAsState(if (pressed) 0.96f else 1f, label = "scale")
+
                 val pageOffset = (index - pagerState.currentPage).toFloat()
                 val isMainPage = abs(pageOffset) < 0.5f
+
+                val borderColor = when (index % images.size) {
+                    0 -> Color(0xFF64B5F6) // Azul claro - Personajes
+                    1 -> Color(0xFFE57373) // Rojo claro - Titanes
+                    2 -> Color(0xFFBA68C8) // Violeta - Episodios
+                    3 -> Color(0xFF81C784) // Verde - Organizaciones
+                    4 -> Color(0xFFFFD54F) // Amarillo - Ubicaciones
+                    else -> Color.White.copy(alpha = 0.35f)
+                }
 
                 Column(
                     modifier = Modifier
@@ -256,7 +287,7 @@ fun CarouselCircular(
                         shape = RoundedCornerShape(16.dp),
                         modifier = Modifier
                             .padding(8.dp)
-                            .clickWithSound(context) {
+                            .clickWithSound(context, interactionSource = interactionSource) {
                                 when (index % images.size) {
                                     0 -> navigateToCharacters()
                                     1 -> navigateToTitans()
@@ -267,16 +298,16 @@ fun CarouselCircular(
                             }
                             .graphicsLayer {
                                 // Animaciones 3D (escala, rotación, alfa)
-                                scaleX = 1f - 0.05f * abs(pageOffset)
-                                scaleY = 1f - 0.05f * abs(pageOffset)
+                                scaleX = scale - 0.05f * abs(pageOffset)
+                                scaleY = scale - 0.05f * abs(pageOffset)
                                 translationY = -abs(pageOffset) * 15f
                                 alpha = 1f - 0.1f * abs(pageOffset)
                                 rotationY = pageOffset * 10f
                                 cameraDistance = 8f
                             }
                             .border(
-                                1.dp,
-                                Color.White.copy(alpha = 0.35f),
+                                1.5.dp,
+                                borderColor,
                                 RoundedCornerShape(16.dp)
                             )
                             .size(240.dp)
@@ -298,6 +329,7 @@ fun CarouselCircular(
                                 .padding(top = 8.dp)
                         )
                     }
+
                 }
             }
         }

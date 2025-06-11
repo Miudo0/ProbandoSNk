@@ -32,13 +32,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.empresa.snk.domain.charactersDomain.Personaje
-
+import com.empresa.snk.ui.utils.PlaySoundOnPageChange
 
 /*
  * Pantalla de detalles de un personaje.
@@ -109,6 +110,7 @@ fun CharacterDetailsDialog(
                     )
                 }
 
+                val context = LocalContext.current
                 // ---------- Pager circular con 3 secciones -------------------
                 val pages = 3
                 val infinitePages = Int.MAX_VALUE
@@ -117,6 +119,7 @@ fun CharacterDetailsDialog(
                     initialPage = startPage,
                     pageCount = { infinitePages }
                 )
+                pagerState.PlaySoundOnPageChange(context)
 
                 HorizontalPager(
                     state = pagerState,

@@ -34,7 +34,7 @@ fun SplashScreen(onFinish: () -> Unit) {
         contentAlignment = Alignment.Center
     ) {
         Image(
-            painter = painterResource(R.drawable.logo), // pon tu imagen en res/drawable
+            painter = painterResource(R.drawable.logo_portada), // pon tu imagen en res/drawable
             contentDescription = null,
             modifier = Modifier.size(220.dp),               // ajusta tamaño
             contentScale = ContentScale.Fit
